@@ -1,0 +1,36 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'D:\\nodejs\\node.exe',
+1 verbose cli   'D:\\nodejs\\node_modules\\npm\\bin\\npm-cli.js',
+1 verbose cli   'run',
+1 verbose cli   'dev' ]
+2 info using npm@4.1.2
+3 info using node@v7.6.0
+4 verbose run-script [ 'predev', 'dev', 'postdev' ]
+5 info lifecycle myvue@1.0.0~predev: myvue@1.0.0
+6 silly lifecycle myvue@1.0.0~predev: no script for predev, continuing
+7 info lifecycle myvue@1.0.0~dev: myvue@1.0.0
+8 verbose lifecycle myvue@1.0.0~dev: unsafe-perm in lifecycle true
+9 verbose lifecycle myvue@1.0.0~dev: PATH: D:\nodejs\node_modules\npm\bin\node-gyp-bin;D:\workspace-test\myvue\node_modules\.bin;D:\workspace-test\myvue\node_modules\.bin;C:\Program Files (x86)\Common Files\NetSarang;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;D:\Java\jdk1.8.0_20\bin;D:\Android\.gradle\wrapper\dists\gradle-2.14.1-all\8bnwg5hd3w55iofp58khbp6yv\gradle-2.14.1\bin;D:\Android\.gradle\wrapper\dists\gradle-2.14.1-all\8bnwg5hd3w55iofp58khbp6yv\gradle-2.14.1\bin;D:\apache-maven-3.2.5\bin;D:\nodejs\;C:\Program Files\TortoiseSVN\bin;C:\Program Files\Git\cmd;C:\Program Files\Git\bin;C:\WINDOWS\System32\OpenSSH\;D:\Program Files\PuTTY\;C:\Users\glfan\AppData\Local\Microsoft\WindowsApps;C:\Users\glfan\AppData\Roaming\npm;;D:\Program Files (x86)\Microsoft VS Code\bin
+10 verbose lifecycle myvue@1.0.0~dev: CWD: D:\workspace-test\myvue
+11 silly lifecycle myvue@1.0.0~dev: Args: [ '/d /s /c',
+11 silly lifecycle   'webpack-dev-server --inline --progress --config build/webpack.dev.conf.js' ]
+12 verbose stack Error: kill ENOSYS
+12 verbose stack     at exports._errnoException (util.js:1028:11)
+12 verbose stack     at process.kill (internal/process.js:173:13)
+12 verbose stack     at process.listener (D:\nodejs\node_modules\npm\node_modules\npmlog\node_modules\gauge\node_modules\signal-exit\index.js:95:15)
+12 verbose stack     at emitNone (events.js:86:13)
+12 verbose stack     at process.emit (events.js:186:7)
+12 verbose stack     at processEmit (D:\nodejs\node_modules\npm\node_modules\npmlog\node_modules\gauge\node_modules\signal-exit\index.js:155:32)
+12 verbose stack     at Signal.wrap.onsignal (internal/process.js:200:44)
+13 verbose cwd D:\workspace-test\myvue
+14 error Windows_NT 10.0.19041
+15 error argv "D:\\nodejs\\node.exe" "D:\\nodejs\\node_modules\\npm\\bin\\npm-cli.js" "run" "dev"
+16 error node v7.6.0
+17 error npm  v4.1.2
+18 error code ENOSYS
+19 error errno ENOSYS
+20 error syscall kill
+21 error kill ENOSYS
+22 error If you need help, you may report this error at:
+22 error     <https://github.com/npm/npm/issues>
+23 verbose exit [ 1, true ]
