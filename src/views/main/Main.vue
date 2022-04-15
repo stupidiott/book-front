@@ -52,24 +52,24 @@
     </div>
     <div>
       <el-dialog
-        title="修改密码"
+        title="Modify password"
         :visible.sync="modifyPasswordDialogVisible"
         width="30%"
       >
         <el-form ref="accountModifyPasswordFormRef" :rules="accountModifyPasswordFormRule" :model="accountModifyPasswordForm" label-width="180px">
-          <el-form-item label="请输入原来密码：" prop="oldPassword">
+          <el-form-item label="Enter old password：" prop="oldPassword">
             <el-input v-model="accountModifyPasswordForm.oldPassword" type="password"></el-input>
           </el-form-item>
-          <el-form-item label="请输入新密码：" prop="newPassword">
+          <el-form-item label="Enter new password：" prop="newPassword">
             <el-input v-model="accountModifyPasswordForm.newPassword" type="password"></el-input>
           </el-form-item>
-          <el-form-item label="请再次输入新密码：" prop="confirmNewPassword">
+          <el-form-item label="Enter again：" prop="confirmNewPassword">
             <el-input v-model="accountModifyPasswordForm.confirmNewPassword" type="password"></el-input>
         </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
-          <el-button @click="modifyPasswordDialogVisible = false">取 消</el-button>
-          <el-button type="primary" @click="submitModifyPassword">确 定</el-button>
+          <el-button @click="modifyPasswordDialogVisible = false">Cancel</el-button>
+          <el-button type="primary" @click="submitModifyPassword">Confirm</el-button>
         </span>
       </el-dialog>
     </div>
@@ -98,13 +98,13 @@
         },
         accountModifyPasswordFormRule:{
           oldPassword: [
-            { required: true, message: '请输入原来密码不能为空', trigger: 'blur' }
+            { required: true, message: 'Old password cannot be empty', trigger: 'blur' }
           ],
           newPassword: [
-            { required: true, message: '请输入新密码不能为空', trigger: 'blur' }
+            { required: true, message: 'New password cannot be empty', trigger: 'blur' }
           ],
           confirmNewPassword: [
-            { required: true, message: '请再次输入新密码不能为空', trigger: 'blur' }
+            { required: true, message: 'New password cannot be empty', trigger: 'blur' }
           ]
         }
       }
@@ -152,7 +152,7 @@
             if (valid) {
 
               if(this.accountModifyPasswordForm.newPassword !== this.accountModifyPasswordForm.confirmNewPassword){
-                return this.$message.warning("两次输入的密码不一样");
+                return this.$message.warning("The two input passwords are not the same");
               }
 
               this.$http.post("/api/account/modify/password",vm.accountModifyPasswordForm).then(res=>{
@@ -160,7 +160,7 @@
                   return this.$message.warning(res.data.message);
                 }
                 this.modifyPasswordDialogVisible = false;
-                this.$message.success("修改密码成功");
+                this.$message.success("Success");
               }).catch(error=>{
                 this.$message.error(error);
               })

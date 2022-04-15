@@ -91,7 +91,7 @@
                   label: item.bookName,
                   value: item.bookNo
                 }
-              }).filter(item=>item.status === 0)
+              }).filter(item=>item.status !== 0)
             }).catch(error=>{})
           },
           borrowBook(){

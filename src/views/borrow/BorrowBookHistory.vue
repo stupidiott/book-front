@@ -37,7 +37,7 @@
         name: "borrowBookHistory",
         data(){
           return{
-            menuName: '借阅历史',
+            menuName: 'History',
             query: {
               bookNo: '',
               pageNum: 1,
@@ -46,7 +46,7 @@
             tableTitle: [
               {prop: 'bookNo',label: 'Book Id' },
               {prop: 'bookName',label: 'Title'},
-              {prop: 'borrowIdentityNo',label: '借书人身份证号' },
+              {prop: 'borrowIdentityNo',label: 'Username' },
               {prop: 'startDate',label: 'Borrow Time'},
               {prop: 'returnDate',label: 'Return Time'},
             ],
@@ -60,7 +60,7 @@
         methods:{
           listBorrowBookHistory(){
             let params = this.query;
-            params.deleteFlag = 1
+            params.deleteFlag = 1;
             this.$http.post('/api/borrow/book/list',params).then(res=>{
               this.tableData = res.data.data.list.map(item=>{
                 return {

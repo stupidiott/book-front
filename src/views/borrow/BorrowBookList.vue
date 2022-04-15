@@ -33,6 +33,8 @@
 </template>
 
 <script>
+    import {mapState} from "vuex";
+
     export default {
         name: "borrow-book",
         data(){
@@ -41,7 +43,8 @@
             query: {
               bookNo: '',
               pageNum: 1,
-              pageSize: 10
+              pageSize: 10,
+              borrowIdentityNo: ''
             },
             tableTitle: [
               {prop: 'bookNo',label: 'Book Id' ,width: 300},
@@ -58,6 +61,17 @@
         mounted(){
           this.listBorrowBook();
         },
+        computed: {
+        // 第一种写法
+        ...mapState(['user','token'])
+        // 第二种写法
+        // token(){
+        //   return this.$store.state.token
+        // },
+        // user(){
+        //   return this.$store.state.user;
+        // }
+      },
         methods:{
           listBorrowBook(){
             let params = this.query;
@@ -71,7 +85,7 @@
                   endDate: item.endTime ? item.endTime.substr(0,10) : '--',
                   expireFlag: currentTime>endTime ? '<span class="expireFlag">expired</span>' : 'unexpired'
                 }
-              });
+              }).filter(item=>item.borrowIdentityNo === this.user.username && item.deleteFlag === 0);
               this.total = Number.parseInt(res.data.data.total);
             })
           },

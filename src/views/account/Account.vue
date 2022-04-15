@@ -8,7 +8,7 @@
         <edu-search>
           <el-row :gutter="4">
             <el-col :span="4">
-              <el-input v-model="query.username" placeholder="请输入用户名" clearable @keyup.enter.native="searchUser" @click="searchUser" @clear="searchUser"></el-input>
+              <el-input v-model="query.username" placeholder="Input username" clearable @keyup.enter.native="searchUser" @click="searchUser" @clear="searchUser"></el-input>
             </el-col>
             <el-col :span="4">
               <el-button icon="el-icon-search" type="primary" @click="searchUser"></el-button>
@@ -18,7 +18,7 @@
 
 
         <div style="margin-top: 10px">
-          <el-button type="primary" size="small" @click="addAccount" v-show="user.accountType !== 3">新增</el-button>
+          <el-button type="primary" size="small" @click="addAccount" v-show="user.accountType !== 3">Add</el-button>
         </div>
         <!--显示内容-->
         <edu-table :titles="titles"
@@ -98,7 +98,7 @@
       name: "Account",
         data(){
             return{
-                menuName: '账号管理',
+                menuName: 'Account Management',
                 loading: false,
                 dialogVisible: false,
                 authDialogVisible: false,

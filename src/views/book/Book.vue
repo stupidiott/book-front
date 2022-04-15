@@ -24,9 +24,9 @@
       <!--显示内容-->
       <edu-table :titles="tableTitle"
                  :table-data="tableData"
-                 :visible-operation="true"
-                 :visible-delete="true"
-                 :visible-edit="true"
+                 :visible-operation="user.accountType!==4"
+                 :visible-delete="user.accountType!==4"
+                 :visible-edit="user.accountType!==4"
                  @editRow="editBook"
                  @deleteRow="deleteBook">
       </edu-table>
@@ -38,38 +38,41 @@
       </edu-page>
 
       <el-dialog
-        :title="isModify ? '编辑图书' : '新增图书'"
+        :title="isModify ? 'Edit Book' : 'Add Book'"
         :visible.sync="dialogVisible"
         width="800px"
         :before-close="handleClose">
         <el-form ref="bookFormRef" :rules="bookFormRul" :model="bookForm" label-width="120px">
-          <el-form-item label="图书编号：" prop="bookNo">
+          <el-form-item label="Book Id：" prop="bookNo">
             <el-input v-model="bookForm.bookNo" :disabled="isModify"></el-input>
           </el-form-item>
-          <el-form-item label="图书名称：" prop="bookName">
+          <el-form-item label="Inventory：" prop="status">
+            <el-input v-model="bookForm.status" ></el-input>
+          </el-form-item>
+          <el-form-item label="Title：" prop="bookName">
             <el-input v-model="bookForm.bookName"></el-input>
           </el-form-item>
-          <el-form-item label="图书作者：" prop="author">
+          <el-form-item label="Author：" prop="author">
             <el-input v-model="bookForm.author"></el-input>
           </el-form-item>
-          <el-form-item label="所属图书馆：" prop="library">
+          <el-form-item label="Branch：" prop="library">
             <edu-select :options="libraryOptions" :value="bookForm.library" @handleSelectValue="handleSelectLibrary">
             </edu-select>
           </el-form-item>
-          <el-form-item label="图书分类：" prop="categoryName">
+          <el-form-item label="Category：" prop="categoryName">
             <edu-select :options="categoryNameOptions" :value="bookForm.categoryName" @handleSelectValue="handleSelectCategoryName">
             </edu-select>
           </el-form-item>
-          <el-form-item label="出版社：" prop="publisher">
+          <el-form-item label="Publisher：" prop="publisher">
             <el-input v-model="bookForm.publisher"></el-input>
           </el-form-item>
-          <el-form-item label="描述：" prop="remark">
+          <el-form-item label="Description：" prop="remark">
             <el-input type="textarea" rows="8" maxlength="200" show-word-limit v-model="bookForm.remark"></el-input>
           </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
-          <el-button @click="dialogVisible = false">取 消</el-button>
-          <el-button type="primary" @click="submitForm">确 定</el-button>
+          <el-button @click="dialogVisible = false">Cancel</el-button>
+          <el-button type="primary" @click="submitForm">Confirm</el-button>
         </span>
       </el-dialog>
 
@@ -81,6 +84,7 @@
     import bookApi from '@/api/book/bookApi'
 
     import parameterApi from '@/api/parameter/parameterApi'
+    import {mapState} from "vuex";
 
     const bookObj = {
       bookNo: '',
@@ -89,7 +93,8 @@
       library: '',
       categoryName: '',
       publisher: '',
-      remark: ''
+      remark: '',
+      status: ''
     }
 
     export default {
@@ -108,6 +113,9 @@
             bookFormRul:{
               bookNo:[
                 {required: true,message: 'enter book id',trigger: 'blur'}
+              ],
+              status:[
+                {required: true,message: 'enter inventory',trigger: 'blur'}
               ],
               bookName:[
                 {required: true,message: 'enter book name',trigger: 'blur'}
@@ -134,7 +142,7 @@
               {prop: 'library',label: 'Branch'},
               {prop: 'categoryName',label: 'Category'},
               {prop: 'publisher',label: 'Publisher'},
-              {prop: 'statusHtml',label: 'Status',isHtml: true},
+              {prop: 'status',label: 'Inventory',isHtml: false},
               {prop: 'createTime',label: 'Entry Time'},
               {prop: 'remarkHtml',label: 'Description',isHtml: true},
 
@@ -143,6 +151,9 @@
             total: 0,
           }
         },
+      computed:{
+        ...mapState(['user'])
+      },
         mounted(){
           this.listBook()
           this.listParameter();
@@ -157,7 +168,7 @@
             this.tableData = res.data.list.map(item=>{
               return{
                 ...item,
-                statusHtml: item.status === 0 ? '未借出' : '<span style="color: red">已借出</span>',
+
                 remarkHtml: `<span class="oneLine" title="${item.remark}">${item.remark}</span>`
               }
             })
@@ -228,9 +239,9 @@
 
           },
           deleteBook(row){
-            this.$confirm('确认删除图书么？','删除图书',{
-              confirmButtonText: '确认',
-              cancelButtonText: '取消'
+            this.$confirm('Submission Confirm？','Delete Book',{
+              confirmButtonText: 'Confirm',
+              cancelButtonText: 'Cancel'
             }).then(()=>{
               let params = {
                 id: row.id,
@@ -241,7 +252,7 @@
                   this.$message.warning(res.data.message);
                   return;
                 }
-                this.$message.success("删除成功");
+                this.$message.success("Success");
                 this.listBook();
               }).catch(error=>{
 

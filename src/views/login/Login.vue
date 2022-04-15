@@ -25,20 +25,20 @@
         <el-form-item>
           <el-input prop="username"
                     prefix-icon="el-icon-user"
-                    placeholder="请输入用户名"
+                    placeholder="Enter username"
                     v-model="loginForm.username"
           ></el-input>
         </el-form-item>
         <el-form-item prop="password">
           <el-input
             prefix-icon="el-icon-lock"
-            placeholder="请输入密码"
+            placeholder="Enter password"
             type="password"
             v-model="loginForm.password"
           ></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button style="width: 100%" type="primary" native-type="login" @click.prevent="login">登录</el-button>
+          <el-button style="width: 100%" type="primary" native-type="login" @click.prevent="login">Login</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -54,7 +54,7 @@
     data() {
       return {
         loginForm: {
-          username: 'admin',
+          username: 'Librarian',
           password: 'admin'
         }
       };
@@ -103,7 +103,7 @@
   .login-box{
     width: 320px;
     height: 260px;
-    background: rgba(255,255,255,0.6);
+    background: rgba(255,255,255,0.9);
     border-radius: 3px;
     position: absolute;
     left: 50%;
