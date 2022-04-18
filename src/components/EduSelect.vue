@@ -36,7 +36,7 @@
             },
             placeholder:{
               type: String,
-              default: "--Select--"
+              default: "--------------Select--------------"
             }
         },
         watch:{

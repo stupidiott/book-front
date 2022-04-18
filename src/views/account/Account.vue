@@ -50,8 +50,8 @@
         <el-form-item label="Username：" prop="username">
           <el-input v-model="accountForm.username"></el-input>
         </el-form-item>
-        <el-form-item label="Password：" prop="password">
-          <el-input v-model="accountForm.password"></el-input>
+        <el-form-item label="Password：">
+          <el-input placeholder="The default password is 123456" disabled="true"></el-input>
         </el-form-item>
         <el-form-item label="Usertype：" prop="accountType">
           <edu-select @handleSelectValue="handleSelectAccountType" :value="accountForm.accountType" :options="accountTypeOptions"></edu-select>
@@ -144,13 +144,10 @@
                 total: 0,
                 accountFormRule:{
                     username: [
-                        { required: true, message: 'Input username', trigger: 'blur' }
-                    ],
-                    password: [
-                        { required: true, message: 'Input password', trigger: 'blur' }
+                        { required: true, message: 'Username cannot be empty', trigger: 'blur' }
                     ],
                     accountType: [
-                        { required: true, message: 'Select usertype', trigger: 'blur' }
+                        { required: true, message: 'Usertype cannot be empty', trigger: 'blur' }
                     ]
                 }
             }
@@ -254,6 +251,7 @@
 
             submitUser(){
                 let vm = this;
+                vm.accountForm.password = '123456';
                 this.$refs.accountFormRef.validate((valid) => {
                     if (valid) {
                         this.$http.post("/api/account/add",vm.accountForm).then(res=>{
