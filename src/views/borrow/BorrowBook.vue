@@ -30,7 +30,7 @@
                 Borrow Date：
               </td>
               <td>
-                <el-date-picker v-model="borrowBookForm.startTime" placeholder="Select the date"></el-date-picker>
+                <div id="BorrowDate"> </div>
               </td>
             </tr>
             <tr>
@@ -38,7 +38,7 @@
                 Return Date：
               </td>
               <td>
-                <el-date-picker v-model="borrowBookForm.endTime" placeholder="Select the date"></el-date-picker>
+                <div id="ReturnDate"> </div>
               </td>
             </tr>
           </table>
@@ -97,6 +97,9 @@
           borrowBook(){
             this.btnDisabled = false;
             this.borrowBookForm.borrowIdentityNo = this.user.username;
+            this.borrowBookForm.startTime = new Date();
+            this.borrowBookForm.endTime = new Date(new Date().getTime() + 24*60*60*1000*10);
+            alert(this.borrowBookForm.endTime)
             let params = this.borrowBookForm;
             this.$http.post('/api/borrow/book/add',params).then(res=>{
               if(res.data.code != 200){
@@ -111,6 +114,25 @@
           }
         }
     }
+
+
+    window.onload=function(){
+      setInterval(function(){
+        let date = new Date();
+        let year=date.getFullYear(); //获取当前年份
+        let mon = date.getMonth() + 1; //获取当前月份
+        let da = date.getDate(); //获取当前日
+        let bd = document.getElementById('BorrowDate');
+        bd.innerHTML=+year+'-'+mon+'-'+da;
+        let date2 = new Date(date.getTime() + 24*60*60*1000*10);
+        let year2 = date2.getFullYear(); //获取当前年份
+        let mon2 = date2.getMonth() + 1; //获取当前月份
+        let da2 = date2.getDate(); //获取当前日
+        let rd = document.getElementById('ReturnDate');
+        rd.innerHTML=+year2+'-'+mon2+'-'+da2;
+      },1)
+    }
+
 </script>
 
 <style scoped lang="less">
