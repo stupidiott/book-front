@@ -20,7 +20,13 @@
               </td>
               <td>
                 <el-select v-model="borrowBookForm.bookNo" filterable placeholder="Select a book ">
-                  <el-option v-for="(item,index) in bookOptions" :key="index" :label="item.label" :value="item.value">
+                  <el-option
+                    v-for="(item,index) in bookOptions"
+                    :key="index"
+                    :label="item.label"
+                    :value="item.value" >
+                    <span style="float: left">{{ item.label }}</span>
+                    <span style="float: right; color: #8492a6; font-size: 13px">{{ item.status }} copies</span>
                   </el-option>
                 </el-select>
               </td>
@@ -65,6 +71,7 @@
               bookNo: '',
               startTime: '',
               endTime: '',
+              status:''
             }
           }
         },
@@ -89,7 +96,8 @@
                 return{
                   ...item,
                   label: item.bookName,
-                  value: item.bookNo
+                  value: item.bookNo,
+                  status: item.status
                 }
               }).filter(item=>item.status !== 0)
             }).catch(error=>{})
@@ -99,7 +107,6 @@
             this.borrowBookForm.borrowIdentityNo = this.user.username;
             this.borrowBookForm.startTime = new Date();
             this.borrowBookForm.endTime = new Date(new Date().getTime() + 24*60*60*1000*10);
-            alert(this.borrowBookForm.endTime)
             let params = this.borrowBookForm;
             this.$http.post('/api/borrow/book/add',params).then(res=>{
               if(res.data.code != 200){
