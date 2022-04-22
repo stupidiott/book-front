@@ -36,7 +36,7 @@
                 Borrow Date：
               </td>
               <td>
-                <div id="BorrowDate"> </div>
+                <div>{{this.borrowdate}}</div>
               </td>
             </tr>
             <tr>
@@ -44,7 +44,7 @@
                 Return Date：
               </td>
               <td>
-                <div id="ReturnDate"> </div>
+                <div >{{this.returndate}}</div>
               </td>
             </tr>
           </table>
@@ -63,9 +63,11 @@
         name: "borrow-book",
         data(){
           return{
-            menuName: '借阅图书',
+            menuName: 'Borrow book',
             btnDisabled: false,
             bookOptions: [],
+            borrowdate:'',
+            returndate:'',
             borrowBookForm:{
               borrowIdentityNo: '',
               bookNo: '',
@@ -77,6 +79,7 @@
         },
         mounted(){
           this.listBook();
+          this.time();
         },
         computed: {
         // 第一种写法
@@ -102,11 +105,34 @@
               }).filter(item=>item.status !== 0)
             }).catch(error=>{})
           },
+          time() {
+            this.timing = setInterval(() => {
+              let date = new Date();
+              let day = this.judzero(date.getDate());
+              let month = this.judzero(date.getMonth()+1);
+              let year = date.getFullYear();
+              this.borrowdate = +year + '-' + month + '-' + day;
+
+              date.setDate(date.getDate() + 10)//10days 过期
+              day = this.judzero(date.getDate());
+              month = this.judzero(date.getMonth()+1);
+              year = date.getFullYear();
+              this.returndate = +year + '-' + month + '-' + day;
+
+
+            }, 1000)
+
+          },
+          judzero(num){
+            if(num<10)
+              num = '0' + num;
+            return num;
+          },
           borrowBook(){
             this.btnDisabled = false;
             this.borrowBookForm.borrowIdentityNo = this.user.username;
-            this.borrowBookForm.startTime = new Date();
-            this.borrowBookForm.endTime = new Date(new Date().getTime() + 24*60*60*1000*10);
+            this.borrowBookForm.startTime = this.borrowdate;
+            this.borrowBookForm.endTime = this.returndate;
             let params = this.borrowBookForm;
             this.$http.post('/api/borrow/book/add',params).then(res=>{
               if(res.data.code != 200){
@@ -122,23 +148,6 @@
         }
     }
 
-
-    window.onload=function(){
-      setInterval(function(){
-        let date = new Date();
-        let year=date.getFullYear(); //获取当前年份
-        let mon = date.getMonth() + 1; //获取当前月份
-        let da = date.getDate(); //获取当前日
-        let bd = document.getElementById('BorrowDate');
-        bd.innerHTML=+year+'-'+mon+'-'+da;
-        let date2 = new Date(date.getTime() + 24*60*60*1000*10);
-        let year2 = date2.getFullYear(); //获取当前年份
-        let mon2 = date2.getMonth() + 1; //获取当前月份
-        let da2 = date2.getDate(); //获取当前日
-        let rd = document.getElementById('ReturnDate');
-        rd.innerHTML=+year2+'-'+mon2+'-'+da2;
-      },1)
-    }
 
 </script>
 
