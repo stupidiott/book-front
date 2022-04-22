@@ -55,9 +55,25 @@
           <el-form-item label="Author：" prop="author">
             <el-input v-model="bookForm.author"></el-input>
           </el-form-item>
-          <el-form-item label="Location：" prop="library">
-            <edu-select :options="libraryOptions" :value="bookForm.library" @handleSelectValue="handleSelectLibrary">
-            </edu-select>
+          <el-form-item label="Location：" required>
+            <el-col :span="8">
+              <el-form-item prop="floor">
+                <edu-select :options="floorOptions" :value="bookForm.floor" @handleSelectValue="handleSelectFloor"
+                            style="width: 100%;"></edu-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item prop="library">
+                <edu-select :options="libraryOptions" :value="bookForm.library" @handleSelectValue="handleSelectLibrary"
+                            style="width: 100%;"></edu-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item prop="address">
+                <el-input v-model="bookForm.address"
+                          style="width: 100%;"></el-input>
+              </el-form-item>
+            </el-col>
           </el-form-item>
           <el-form-item label="Category：" prop="categoryName">
             <edu-select :options="categoryNameOptions" :value="bookForm.categoryName" @handleSelectValue="handleSelectCategoryName">
@@ -94,7 +110,9 @@
       categoryName: '',
       publisher: '',
       remark: '',
-      status: ''
+      status: '',
+      floor: '',
+      address: ''
     }
 
     export default {
@@ -124,7 +142,13 @@
                 {required: true,message: 'enter author',trigger: 'blur'}
               ],
               library:[
-                {required: true,message: 'select location',trigger: 'change'}
+                {required: true,message: 'select area',trigger: 'change'}
+              ],
+              floor:[
+                {required: true,message: 'select floor',trigger: 'change'}
+              ],
+              address:[
+                {required: true,message: 'enter address',trigger: 'blur'}
               ],
               categoryName:[
                 {required: true,message: 'select category',trigger: 'change'}
@@ -134,12 +158,13 @@
               ],
             },
             libraryOptions: [],
+            floorOptions: [],
             categoryNameOptions: [],
             tableTitle: [
               {prop: 'bookNo',label: 'Book Id' },
               {prop: 'bookName',label: 'Book Name' },
               {prop: 'author',label: 'Author'},
-              {prop: 'library',label: 'Location'},
+              {prop: 'Location',label: 'Location'},
               {prop: 'categoryName',label: 'Category'},
               {prop: 'publisher',label: 'Publisher'},
               {prop: 'status',label: 'Inventory',isHtml: false},
@@ -168,7 +193,7 @@
             this.tableData = res.data.list.map(item=>{
               return{
                 ...item,
-
+                Location : item.floor + ' ' +item.library + '-' + item.address,
                 remarkHtml: `<span class="oneLine" title="${item.remark}">${item.remark}</span>`
               }
             })
@@ -185,6 +210,14 @@
             })
             parameterApi.getParameterList('/api/parameter/list?parameterType=book_type').then(res=>{
               this.categoryNameOptions = res.data.data.list.map(item=>{
+                return{
+                  label: item.parameterKey,
+                  value: item.parameterValue
+                }
+              });
+            })
+            parameterApi.getParameterList('/api/parameter/list?parameterType=floor_num').then(res=>{
+              this.floorOptions = res.data.data.list.map(item=>{
                 return{
                   label: item.parameterKey,
                   value: item.parameterValue
@@ -266,6 +299,9 @@
           },
           handleSelectLibrary(value){
             this.bookForm.library = value;
+          },
+          handleSelectFloor(value){
+            this.bookForm.floor = value;
           },
           handleClose(){
             this.dialogVisible = false;
