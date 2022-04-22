@@ -18,7 +18,7 @@
 
       <!--新增按钮-->
       <div style="margin-top: 10px">
-        <el-button type="primary" size="small" @click="addBook">Add book</el-button>
+        <el-button type="primary" size="small" v-if="user.accountType==1" @click="addBook">Add book</el-button>
       </div>
 
       <!--显示内容-->
