@@ -55,7 +55,7 @@
           <el-form-item label="Author：" prop="author">
             <el-input v-model="bookForm.author"></el-input>
           </el-form-item>
-          <el-form-item label="Branch：" prop="library">
+          <el-form-item label="Location：" prop="library">
             <edu-select :options="libraryOptions" :value="bookForm.library" @handleSelectValue="handleSelectLibrary">
             </edu-select>
           </el-form-item>
@@ -124,7 +124,7 @@
                 {required: true,message: 'enter author',trigger: 'blur'}
               ],
               library:[
-                {required: true,message: 'select branch',trigger: 'change'}
+                {required: true,message: 'select location',trigger: 'change'}
               ],
               categoryName:[
                 {required: true,message: 'select category',trigger: 'change'}
@@ -139,7 +139,7 @@
               {prop: 'bookNo',label: 'Book Id' },
               {prop: 'bookName',label: 'Book Name' },
               {prop: 'author',label: 'Author'},
-              {prop: 'library',label: 'Branch'},
+              {prop: 'library',label: 'Location'},
               {prop: 'categoryName',label: 'Category'},
               {prop: 'publisher',label: 'Publisher'},
               {prop: 'status',label: 'Inventory',isHtml: false},
