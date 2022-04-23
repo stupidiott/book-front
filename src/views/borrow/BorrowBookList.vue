@@ -19,8 +19,8 @@
     <!--显示内容-->
     <edu-table :titles="tableTitle"
                :table-data="tableData"
-               :visible-operation="true"
-               :visible-return-book="true"
+               :visible-operation="user.accountType==1"
+               :visible-return-book="user.accountType==1"
                @returnBook="returnBook">
     </edu-table>
     <edu-page :current-page="query.pageNum"
@@ -75,19 +75,36 @@
         methods:{
           listBorrowBook(){
             let params = this.query;
-            this.$http.post('/api/borrow/book/list',params).then(res=>{
-              this.tableData = res.data.data.list.map(item=>{
-                let currentTime = new Date().getTime();
-                let endTime = new Date(item.endTime).getTime();
-                return {
-                  ...item,
-                  startDate: item.startTime.substr(0,10),
-                  endDate: item.endTime ? item.endTime.substr(0,10) : '--',
-                  expireFlag: currentTime>endTime ? '<span class="expireFlag">expired</span>' : 'unexpired'
-                }
-              }).filter(item=>item.borrowIdentityNo === this.user.username && item.deleteFlag === 0);
-              this.total = Number.parseInt(res.data.data.total);
-            })
+            if(this.user.accountType==4){
+                this.$http.post('/api/borrow/book/list',params).then(res=>{
+                  this.tableData = res.data.data.list.map(item=>{
+                    let currentTime = new Date().getTime();
+                    let endTime = new Date(item.endTime).getTime();
+                    return {
+                      ...item,
+                      startDate: item.startTime.substr(0,10),
+                      endDate: item.endTime ? item.endTime.substr(0,10) : '--',
+                      expireFlag: currentTime>endTime ? '<span class="expireFlag">expired</span>' : 'unexpired'
+                    }
+                  }).filter(item=>item.borrowIdentityNo === this.user.username && item.deleteFlag === 0);
+                  this.total = Number.parseInt(res.data.data.total);
+                })
+            }
+            else{
+              this.$http.post('/api/borrow/book/list',params).then(res=>{
+                this.tableData = res.data.data.list.map(item=>{
+                  let currentTime = new Date().getTime();
+                  let endTime = new Date(item.endTime).getTime();
+                  return {
+                    ...item,
+                    startDate: item.startTime.substr(0,10),
+                    endDate: item.endTime ? item.endTime.substr(0,10) : '--',
+                    expireFlag: currentTime>endTime ? '<span class="expireFlag">expired</span>' : 'unexpired'
+                  }
+                })
+                this.total = Number.parseInt(res.data.data.total);
+              })
+            }
           },
           searchBorrowBook(){
             this.listBorrowBook();
