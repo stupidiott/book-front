@@ -46,7 +46,7 @@
             tableTitle: [
               {prop: 'bookNo',label: 'Book Id' },
               {prop: 'bookName',label: 'Title'},
-              {prop: 'borrowIdentityNo',label: 'Username' },
+              {prop: 'borrowIdentityNo',label: 'borrower' },
               {prop: 'startDate',label: 'Borrow Time'},
               {prop: 'returnDate',label: 'Return Time'},
             ],
