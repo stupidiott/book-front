@@ -49,7 +49,7 @@
             tableTitle: [
               {prop: 'bookNo',label: 'Book Id' ,width: 300},
               {prop: 'bookName',label: 'Book Name' ,width: 300},
-              // {prop: 'borrowIdentityNo',label: '借书人身份证号' ,width: 240},
+              {prop: 'borrowIdentityNo',label: 'borrower' ,width: 240},
               {prop: 'startDate',label: 'Borrow Time',width: 300},
               {prop: 'endDate',label: 'Due Time',width: 300},
               {prop: 'expireFlag',label: 'Expired',width: 300,isHtml: true}
@@ -101,7 +101,7 @@
                     endDate: item.endTime ? item.endTime.substr(0,10) : '--',
                     expireFlag: currentTime>endTime ? '<span class="expireFlag">expired</span>' : 'unexpired'
                   }
-                })
+                }).filter(item=>item.deleteFlag === 0);
                 this.total = Number.parseInt(res.data.data.total);
               })
             }

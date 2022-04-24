@@ -18,7 +18,7 @@
 
 
         <div style="margin-top: 10px">
-          <el-button type="primary" size="small" @click="addAccount" v-show="user.accountType !== 3">Add</el-button>
+          <el-button type="primary" size="small" @click="addAccount" v-show="user.accountType == 1">Add</el-button>
         </div>
         <!--显示内容-->
         <edu-table :titles="titles"
@@ -116,7 +116,8 @@
                 accountForm:{
                     username: '',
                     password: '',
-                    accountType: ''
+                    accountType: '',
+                    debt:'',
                 },
                 accountAuthForm:{
                     id: '',
@@ -137,7 +138,7 @@
                     {prop: 'accountTypeStr',label: 'Type' },
                     {prop: 'createTime',label: 'Create Time'},
                     {prop: 'lastLoginTime',label: 'Recently Login'},
-                    // {prop: 'auth',label: '权限'},
+                    {prop: 'debt',label: 'debt'},
                 ],
                 clazzList: [],
                 tableData: [],
@@ -252,6 +253,7 @@
             submitUser(){
                 let vm = this;
                 vm.accountForm.password = '123456';
+                vm.accountForm.debt=0;
                 this.$refs.accountFormRef.validate((valid) => {
                     if (valid) {
                         this.$http.post("/api/account/add",vm.accountForm).then(res=>{

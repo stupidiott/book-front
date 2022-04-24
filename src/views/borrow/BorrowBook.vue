@@ -94,6 +94,12 @@
       },
         methods:{
           listBook(){
+            if(this.user.debt!=0){
+              this.$message.warning('Please pay off the debt first！');
+              this.$router.push({
+                path: '/home'
+              })
+            }
             this.$http.post('/api/book/list',{}).then(res=>{
               this.bookOptions = res.data.data.list.map(item=>{
                 return{
