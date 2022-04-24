@@ -66,6 +66,7 @@
             menuName: 'Borrow book',
             btnDisabled: false,
             bookOptions: [],
+            tableData: [],
             borrowdate:'',
             returndate:'',
             borrowBookForm:{
@@ -135,21 +136,53 @@
             return num;
           },
           borrowBook(){
-            this.btnDisabled = false;
-            this.borrowBookForm.borrowIdentityNo = this.user.username;
-            this.borrowBookForm.startTime = this.borrowdate;
-            this.borrowBookForm.endTime = this.returndate;
-            let params = this.borrowBookForm;
-            this.$http.post('/api/borrow/book/add',params).then(res=>{
-              if(res.data.code != 200){
-                this.$message.warning('Fail！');
-                return;
+            this.$http.post('/api/borrow/book/list',{}).then(res=>{
+              this.tableData = res.data.data.list.map(item=>{
+                return {
+                  ...item,
+                }
+              }).filter(item=>item.borrowIdentityNo === this.user.username && item.deleteFlag === 0);
+              if(this.tableData.length > 4){
+                this.$message.warning('You can only borrow no more than FIVE books !');
+              }else {
+                for (let i = 0; i < this.tableData.length; i++) {
+                  if (this.borrowBookForm.bookNo === this.tableData[i].bookNo){
+                    this.$message.warning('DO NOT borrow the same book !');
+                    return
+                  }
+                }
+                this.btnDisabled = false;
+                this.borrowBookForm.borrowIdentityNo = this.user.username;
+                this.borrowBookForm.startTime = this.borrowdate;
+                this.borrowBookForm.endTime = this.returndate;
+                let params = this.borrowBookForm;
+                this.$http.post('/api/borrow/book/add',params).then(res=>{
+                  if(res.data.code != 200){
+                    this.$message.warning('Fail！');
+                    return;
+                  }
+                  this.$router.push({
+                    path: '/borrowBookList'
+                  })
+                  this.$message.success('Success！');
+                })
               }
-              this.$router.push({
-                path: '/borrowBookList'
-              })
-              this.$message.success('Success！');
             })
+            // this.btnDisabled = false;
+            // this.borrowBookForm.borrowIdentityNo = this.user.username;
+            // this.borrowBookForm.startTime = this.borrowdate;
+            // this.borrowBookForm.endTime = this.returndate;
+            // let params = this.borrowBookForm;
+            // this.$http.post('/api/borrow/book/add',params).then(res=>{
+            //   if(res.data.code != 200){
+            //     this.$message.warning('Fail！');
+            //     return;
+            //   }
+            //   this.$router.push({
+            //     path: '/borrowBookList'
+            //   })
+            //   this.$message.success('Success！');
+            // })
           }
         }
     }

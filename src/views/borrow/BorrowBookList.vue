@@ -87,7 +87,6 @@
                       expireFlag: currentTime>endTime ? '<span class="expireFlag">expired</span>' : 'unexpired'
                     }
                   }).filter(item=>item.borrowIdentityNo === this.user.username && item.deleteFlag === 0);
-                  this.total = Number.parseInt(res.data.data.total);
                 })
             }
             else{
