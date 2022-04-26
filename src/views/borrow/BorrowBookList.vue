@@ -29,8 +29,8 @@
               @handleSizeChange="handleSizeChange"
               @handleCurrentChange="handleCurrentChange">
     </edu-page>
-    <edu-table :titles="advancetableTitle"
-               :table-data="advancetableData"
+    <edu-table :titles="reservetableTitle"
+               :table-data="reservetableData"
                :visible-operation="user.accountType==1"
                :visible-return-book="user.accountType==1"
                @returnBook="returnBook">
@@ -59,23 +59,23 @@
               borrowIdentityNo: ''
             },
             tableTitle: [
-              {prop: 'bookNo',label: 'Borrrow Book Id' ,width: 300},
+              {prop: 'bookNo',label: 'Borrow Book Id' ,width: 300},
               {prop: 'bookName',label: 'Borrow Book Name' ,width: 300},
               {prop: 'borrowIdentityNo',label: 'borrower' ,width: 240},
               {prop: 'startDate',label: 'Borrow Time',width: 300},
               {prop: 'endDate',label: 'Due Time',width: 300},
               {prop: 'expireFlag',label: 'Expired',width: 300,isHtml: true}
             ],
-            advancetableTitle: [
-              {prop: 'bookNo',label: 'Advance Book Id' ,width: 300},
-              {prop: 'bookName',label: 'Advance Book Name' ,width: 300},
+            reservetableTitle: [
+              {prop: 'bookNo',label: 'Reserve Book Id' ,width: 300},
+              {prop: 'bookName',label: 'Reserve Book Name' ,width: 300},
               {prop: 'borrowIdentityNo',label: 'borrower' ,width: 240},
-              {prop: 'startDate',label: 'Advance Time',width: 300},
+              {prop: 'startDate',label: 'Reserve Time',width: 300},
               {prop: 'endDate',label: 'Due Time',width: 300},
               {prop: 'expireFlag',label: 'Expired',width: 300,isHtml: true}
             ],
             tableData: [],
-            advancetableData:[],
+            reservetableData:[],
             total: 0
           }
         },
@@ -129,7 +129,7 @@
             }
             if(this.user.accountType==4){
               this.$http.post('/api/borrow/book/list',params).then(res=>{
-                this.advancetableData = res.data.data.list.map(item=>{
+                this.reservetableData = res.data.data.list.map(item=>{
                   let currentTime = new Date().getTime();
                   let endTime = new Date(item.endTime).getTime();
                   return {
@@ -145,7 +145,7 @@
             }
             else{
               this.$http.post('/api/borrow/book/list',params).then(res=>{
-                this.advancetableData = res.data.data.list.map(item=>{
+                this.reservetableData = res.data.data.list.map(item=>{
                   let currentTime = new Date().getTime();
                   let endTime = new Date(item.endTime).getTime();
                   return {

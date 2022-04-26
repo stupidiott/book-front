@@ -52,14 +52,14 @@
                 Advance due time：
               </td>
               <td>
-                <div >{{this.advancetime}}</div>
+                <div >{{this.reservetime}}</div>
               </td>
             </tr>
           </table>
         </div>
         <div class="btn">
           <el-button type="primary" @click="borrowBook(0)" :disabled="btnDisabled">borrow</el-button>
-          <el-button type="primary" @click="borrowBook(1)" :disabled="btnDisabled">advance</el-button>
+          <el-button type="primary" @click="borrowBook(1)" :disabled="btnDisabled">reserve</el-button>
         </div>
       </div>
   </div>
@@ -78,7 +78,7 @@
             tableData: [],
             borrowdate:'',
             returndate:'',
-            advancetime:'',
+            reservetime:'',
             borrowBookForm:{
               borrowIdentityNo: '',
               bookNo: '',
@@ -135,7 +135,7 @@
               this.borrowdate = +year + '-' + month + '-' + day+' '+hour+':'+min+':'+seconds;
 
               hour = hour + 4;//图书馆不会半夜开门不需要判断
-              this.advancetime = +year + '-' + month + '-' + day+' '+hour+':'+min+':'+seconds;
+              this.reservetime = +year + '-' + month + '-' + day+' '+hour+':'+min+':'+seconds;
 
               date.setDate(date.getDate() + 10)//10days 过期
               day = this.judzero(date.getDate());
@@ -206,15 +206,15 @@
                   this.$message.warning('You can only advance no more than TWO books !');
                 } else {
                   for (let i = 0; i < this.tableData.length; i++) {
-                    if (this.borrowBookForm.bookNo === this.tableData[i].bookNo) {
-                      this.$message.warning('DO NOT borrow the same book !');
-                      return
-                    }
+                      if (this.borrowBookForm.bookNo === this.tableData[i].bookNo) {
+                        this.$message.warning('DO NOT borrow the same book !');
+                        return
+                      }
                   }
                   this.btnDisabled = false;
                   this.borrowBookForm.borrowIdentityNo = this.user.username;
                   this.borrowBookForm.startTime = this.borrowdate;
-                  this.borrowBookForm.endTime = this.returndate;
+                  this.borrowBookForm.endTime = this.reservetime;
                   this.borrowBookForm.kind = kind;
                   let params = this.borrowBookForm;
                   this.$http.post('/api/borrow/book/add', params).then(res => {
