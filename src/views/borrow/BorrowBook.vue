@@ -33,7 +33,7 @@
             </tr>
             <tr>
               <td class="title">
-                Borrow Date：
+                Current time：
               </td>
               <td>
                 <div>{{this.borrowdate}}</div>
@@ -41,16 +41,25 @@
             </tr>
             <tr>
               <td class="title">
-                Return Date：
+                Borrow due Date：
               </td>
               <td>
                 <div >{{this.returndate}}</div>
               </td>
             </tr>
+            <tr>
+              <td class="title">
+                Advance due time：
+              </td>
+              <td>
+                <div >{{this.advancetime}}</div>
+              </td>
+            </tr>
           </table>
         </div>
         <div class="btn">
-          <el-button type="primary" @click="borrowBook" :disabled="btnDisabled">Submit</el-button>
+          <el-button type="primary" @click="borrowBook(0)" :disabled="btnDisabled">borrow</el-button>
+          <el-button type="primary" @click="borrowBook(1)" :disabled="btnDisabled">advance</el-button>
         </div>
       </div>
   </div>
@@ -69,12 +78,14 @@
             tableData: [],
             borrowdate:'',
             returndate:'',
+            advancetime:'',
             borrowBookForm:{
               borrowIdentityNo: '',
               bookNo: '',
               startTime: '',
               endTime: '',
-              status:''
+              status:'',
+              kind:''
             }
           }
         },
@@ -118,13 +129,20 @@
               let day = this.judzero(date.getDate());
               let month = this.judzero(date.getMonth()+1);
               let year = date.getFullYear();
-              this.borrowdate = +year + '-' + month + '-' + day;
+              let seconds = this.judzero(date.getSeconds());
+              let min = this.judzero(date.getMinutes());
+              let hour = this.judzero(date.getHours());
+              this.borrowdate = +year + '-' + month + '-' + day+' '+hour+':'+min+':'+seconds;
+
+              hour = hour + 4;//图书馆不会半夜开门不需要判断
+              this.advancetime = +year + '-' + month + '-' + day+' '+hour+':'+min+':'+seconds;
 
               date.setDate(date.getDate() + 10)//10days 过期
               day = this.judzero(date.getDate());
               month = this.judzero(date.getMonth()+1);
               year = date.getFullYear();
-              this.returndate = +year + '-' + month + '-' + day;
+              hour = hour - 4;
+              this.returndate = +year + '-' + month + '-' + day+' '+hour+':'+min+':'+seconds;
 
 
             }, 1000)
@@ -135,39 +153,83 @@
               num = '0' + num;
             return num;
           },
-          borrowBook(){
-            this.$http.post('/api/borrow/book/list',{}).then(res=>{
-              this.tableData = res.data.data.list.map(item=>{
-                return {
-                  ...item,
-                }
-              }).filter(item=>item.borrowIdentityNo === this.user.username && item.deleteFlag === 0);
-              if(this.tableData.length > 4){
-                this.$message.warning('You can only borrow no more than FIVE books !');
-              }else {
-                for (let i = 0; i < this.tableData.length; i++) {
-                  if (this.borrowBookForm.bookNo === this.tableData[i].bookNo){
-                    this.$message.warning('DO NOT borrow the same book !');
-                    return
+          borrowBook(kind){
+            if(this.borrowBookForm.bookNo==''){
+              this.$message.warning('Please select a book !');
+              return;
+            }
+            if(kind==0) {
+              this.$http.post('/api/borrow/book/list', {}).then(res => {
+                this.tableData = res.data.data.list.map(item => {
+                  return {
+                    ...item,
                   }
-                }
-                this.btnDisabled = false;
-                this.borrowBookForm.borrowIdentityNo = this.user.username;
-                this.borrowBookForm.startTime = this.borrowdate;
-                this.borrowBookForm.endTime = this.returndate;
-                let params = this.borrowBookForm;
-                this.$http.post('/api/borrow/book/add',params).then(res=>{
-                  if(res.data.code != 200){
-                    this.$message.warning('Fail！');
-                    return;
+                }).filter(item => item.borrowIdentityNo === this.user.username && item.deleteFlag === 0 && item.kind == 0);
+
+                if (this.tableData.length > 4) {
+                  this.$message.warning('You can only borrow no more than FIVE books !');
+                } else {
+                  for (let i = 0; i < this.tableData.length; i++) {
+                    if (this.borrowBookForm.bookNo === this.tableData[i].bookNo) {
+                      this.$message.warning('DO NOT borrow the same book !');
+                      return
+                    }
                   }
-                  this.$router.push({
-                    path: '/borrowBookList'
+                  this.btnDisabled = false;
+                  this.borrowBookForm.borrowIdentityNo = this.user.username;
+                  this.borrowBookForm.startTime = this.borrowdate;
+                  this.borrowBookForm.endTime = this.returndate;
+                  this.borrowBookForm.kind = kind;
+                  let params = this.borrowBookForm;
+                  this.$http.post('/api/borrow/book/add', params).then(res => {
+                    if (res.data.code != 200) {
+                      this.$message.warning('Fail！');
+                      return;
+                    }
+                    this.$router.push({
+                      path: '/borrowBookList'
+                    })
+                    this.$message.success('Success！');
                   })
-                  this.$message.success('Success！');
-                })
-              }
-            })
+                }
+              })
+            }
+            else{
+              this.$http.post('/api/borrow/book/list', {}).then(res => {
+                this.tableData = res.data.data.list.map(item => {
+                  return {
+                    ...item,
+                  }
+                }).filter(item => item.borrowIdentityNo === this.user.username && item.deleteFlag === 0 && item.kind == 1);
+
+                if (this.tableData.length > 1) {
+                  this.$message.warning('You can only advance no more than TWO books !');
+                } else {
+                  for (let i = 0; i < this.tableData.length; i++) {
+                    if (this.borrowBookForm.bookNo === this.tableData[i].bookNo) {
+                      this.$message.warning('DO NOT borrow the same book !');
+                      return
+                    }
+                  }
+                  this.btnDisabled = false;
+                  this.borrowBookForm.borrowIdentityNo = this.user.username;
+                  this.borrowBookForm.startTime = this.borrowdate;
+                  this.borrowBookForm.endTime = this.returndate;
+                  this.borrowBookForm.kind = kind;
+                  let params = this.borrowBookForm;
+                  this.$http.post('/api/borrow/book/add', params).then(res => {
+                    if (res.data.code != 200) {
+                      this.$message.warning('Fail！');
+                      return;
+                    }
+                    this.$router.push({
+                      path: '/borrowBookList'
+                    })
+                    this.$message.success('Success！');
+                  })
+                }
+              })
+            }
             // this.btnDisabled = false;
             // this.borrowBookForm.borrowIdentityNo = this.user.username;
             // this.borrowBookForm.startTime = this.borrowdate;

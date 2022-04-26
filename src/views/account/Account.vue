@@ -289,22 +289,22 @@
                 }
             },
 
-            async submitSettingAuth(){
-
-              let params = this.accountAuthForm;
-
-              const {data:res} = await setAccountAuth('/api/account/setting/auth',params);
-
-              if(res.code !== 200){
-                return this.$message.error(res.message);
-              }
-
-              this.authDialogVisible = false;
-              this.$message.success("设置权限成功");
-              // 重新加载数据
-              this.getAccountList();
-
-            },
+            // async submitSettingAuth(){
+            //
+            //   let params = this.accountAuthForm;
+            //
+            //   const {data:res} = await setAccountAuth('/api/account/setting/auth',params);
+            //
+            //   if(res.code !== 200){
+            //     return this.$message.error(res.message);
+            //   }
+            //
+            //   this.authDialogVisible = false;
+            //   this.$message.success("设置权限成功");
+            //   // 重新加载数据
+            //   this.getAccountList();
+            //
+            // },
 
             resetPassword(row){
               this.resetPasswordDialogVisible = true;

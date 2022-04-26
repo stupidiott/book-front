@@ -29,6 +29,18 @@
               @handleSizeChange="handleSizeChange"
               @handleCurrentChange="handleCurrentChange">
     </edu-page>
+    <edu-table :titles="advancetableTitle"
+               :table-data="advancetableData"
+               :visible-operation="user.accountType==1"
+               :visible-return-book="user.accountType==1"
+               @returnBook="returnBook">
+    </edu-table>
+    <edu-page :current-page="query.pageNum"
+              :page-size="query.pageSize"
+              :total="total"
+              @handleSizeChange="handleSizeChange"
+              @handleCurrentChange="handleCurrentChange">
+    </edu-page>
   </div>
 </template>
 
@@ -47,14 +59,23 @@
               borrowIdentityNo: ''
             },
             tableTitle: [
-              {prop: 'bookNo',label: 'Book Id' ,width: 300},
-              {prop: 'bookName',label: 'Book Name' ,width: 300},
+              {prop: 'bookNo',label: 'Borrrow Book Id' ,width: 300},
+              {prop: 'bookName',label: 'Borrow Book Name' ,width: 300},
               {prop: 'borrowIdentityNo',label: 'borrower' ,width: 240},
               {prop: 'startDate',label: 'Borrow Time',width: 300},
               {prop: 'endDate',label: 'Due Time',width: 300},
               {prop: 'expireFlag',label: 'Expired',width: 300,isHtml: true}
             ],
+            advancetableTitle: [
+              {prop: 'bookNo',label: 'Advance Book Id' ,width: 300},
+              {prop: 'bookName',label: 'Advance Book Name' ,width: 300},
+              {prop: 'borrowIdentityNo',label: 'borrower' ,width: 240},
+              {prop: 'startDate',label: 'Advance Time',width: 300},
+              {prop: 'endDate',label: 'Due Time',width: 300},
+              {prop: 'expireFlag',label: 'Expired',width: 300,isHtml: true}
+            ],
             tableData: [],
+            advancetableData:[],
             total: 0
           }
         },
@@ -86,7 +107,9 @@
                       endDate: item.endTime ? item.endTime.substr(0,10) : '--',
                       expireFlag: currentTime>endTime ? '<span class="expireFlag">expired</span>' : 'unexpired'
                     }
-                  }).filter(item=>item.borrowIdentityNo === this.user.username && item.deleteFlag === 0);
+
+                  }).filter(item=>item.borrowIdentityNo === this.user.username && item.deleteFlag === 0&&item.kind==0);
+                  this.total = Number.parseInt(res.data.data.total)-1;
                 })
             }
             else{
@@ -100,7 +123,38 @@
                     endDate: item.endTime ? item.endTime.substr(0,10) : '--',
                     expireFlag: currentTime>endTime ? '<span class="expireFlag">expired</span>' : 'unexpired'
                   }
-                }).filter(item=>item.deleteFlag === 0);
+                }).filter(item=>item.deleteFlag === 0&&item.kind==0);
+                this.total = Number.parseInt(res.data.data.total);
+              })
+            }
+            if(this.user.accountType==4){
+              this.$http.post('/api/borrow/book/list',params).then(res=>{
+                this.advancetableData = res.data.data.list.map(item=>{
+                  let currentTime = new Date().getTime();
+                  let endTime = new Date(item.endTime).getTime();
+                  return {
+                    ...item,
+                    startDate: item.startTime,
+                    endDate: item.endTime ? item.endTime : '--',
+                    expireFlag: currentTime>endTime ? '<span class="expireFlag">expired</span>' : 'unexpired'
+                  }
+
+                }).filter(item=>item.borrowIdentityNo === this.user.username && item.deleteFlag === 0&&item.kind==1);
+                this.total = Number.parseInt(res.data.data.total)-1;
+              })
+            }
+            else{
+              this.$http.post('/api/borrow/book/list',params).then(res=>{
+                this.advancetableData = res.data.data.list.map(item=>{
+                  let currentTime = new Date().getTime();
+                  let endTime = new Date(item.endTime).getTime();
+                  return {
+                    ...item,
+                    startDate: item.startTime,
+                    endDate: item.endTime ? item.endTime: '--',
+                    expireFlag: currentTime>endTime ? '<span class="expireFlag">expired</span>' : 'unexpired'
+                  }
+                }).filter(item=>item.deleteFlag === 0&&item.kind==1);
                 this.total = Number.parseInt(res.data.data.total);
               })
             }
