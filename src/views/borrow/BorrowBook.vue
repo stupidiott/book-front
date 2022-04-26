@@ -107,7 +107,6 @@
         methods:{
           listBook(){
             if(this.user.debt!=0){
-              this.$message.warning('Please pay off the debt first！');
               this.$router.push({
                 path: '/home'
               })
@@ -134,14 +133,15 @@
               let hour = this.judzero(date.getHours());
               this.borrowdate = +year + '-' + month + '-' + day+' '+hour+':'+min+':'+seconds;
 
-              hour = hour + 4;//图书馆不会半夜开门不需要判断
+              //图书馆不会半夜开门不需要判断
+              hour = this.judzero(date.getHours() + 4);
               this.reservetime = +year + '-' + month + '-' + day+' '+hour+':'+min+':'+seconds;
 
               date.setDate(date.getDate() + 10)//10days 过期
               day = this.judzero(date.getDate());
               month = this.judzero(date.getMonth()+1);
               year = date.getFullYear();
-              hour = hour - 4;
+              hour = this.judzero(date.getHours());
               this.returndate = +year + '-' + month + '-' + day+' '+hour+':'+min+':'+seconds;
 
 

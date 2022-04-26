@@ -17,6 +17,7 @@
     </edu-search>
 
     <!--显示内容-->
+    <h1>Borrow</h1>
     <edu-table :titles="tableTitle"
                :table-data="tableData"
                :visible-operation="user.accountType==1"
@@ -29,6 +30,7 @@
               @handleSizeChange="handleSizeChange"
               @handleCurrentChange="handleCurrentChange">
     </edu-page>
+    <h1>Reservation</h1>
     <edu-table :titles="reservetableTitle"
                :table-data="reservetableData"
                :visible-operation="user.accountType==1"

@@ -97,6 +97,7 @@
                  if (this.user.username == this.tableData[i].username&&this.tableData[i].debt!=0) {
                    this.$message.warning('You have debts to pay.Please pay the debt or you will not be able to borrow books!.');
                    this.debt = this.tableData[i].debt;
+                   this.user.debt = this.debt;
                  }
                }
                })
