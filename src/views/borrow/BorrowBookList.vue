@@ -63,7 +63,7 @@
             tableTitle: [
               {prop: 'bookNo',label: 'Borrow Book Id' ,width: 300},
               {prop: 'bookName',label: 'Borrow Book Name' ,width: 300},
-              {prop: 'borrowIdentityNo',label: 'borrower' ,width: 240},
+              {prop: 'borrowIdentityNo',label: 'Borrower' ,width: 240},
               {prop: 'startDate',label: 'Borrow Time',width: 300},
               {prop: 'endDate',label: 'Due Time',width: 300},
               {prop: 'expireFlag',label: 'Expired',width: 300,isHtml: true}
@@ -71,7 +71,7 @@
             reservetableTitle: [
               {prop: 'bookNo',label: 'Reserve Book Id' ,width: 300},
               {prop: 'bookName',label: 'Reserve Book Name' ,width: 300},
-              {prop: 'borrowIdentityNo',label: 'borrower' ,width: 240},
+              {prop: 'borrowIdentityNo',label: 'Borrower' ,width: 240},
               {prop: 'startDate',label: 'Reserve Time',width: 300},
               {prop: 'endDate',label: 'Due Time',width: 300},
               {prop: 'expireFlag',label: 'Expired',width: 300,isHtml: true}

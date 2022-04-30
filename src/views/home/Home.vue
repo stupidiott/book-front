@@ -85,7 +85,19 @@
           ...mapState(['user']),
         },
         methods: {
-          pay(){},
+          pay(){
+            let params = {
+              username: this.user.username
+            }
+            this.$http.post('/api/return/expiredbook',params).then(res=>{
+              if(res.data.code !== 200){
+                this.$message.warning(res.data.message);
+                return;
+              }
+              this.$message.success("success");
+              this.reload();
+            })
+          },
            notice(){
              this.$http.post('/api/account/list',{}).then(res=>{
                this.tableData = res.data.data.list.map(item=>{
