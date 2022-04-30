@@ -94,6 +94,7 @@
                 this.$message.warning(res.data.message);
                 return;
               }
+              this.user.debt = 0;
               this.$message.success("success");
               this.reload();
             })
