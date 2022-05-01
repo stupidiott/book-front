@@ -110,7 +110,41 @@
               this.$router.push({
                 path: '/home'
               })
+              return;
             }
+            this.$http.post('/api/borrow/book/list', {}).then(res => {
+              this.tableData = res.data.data.list.map(item => {
+                return {
+                  ...item,
+                }
+              }).filter(item => item.borrowIdentityNo === this.user.username && item.deleteFlag === 0 && item.kind == 1);
+              if (this.tableData.length > 0) {
+                let currentTime = new Date().getTime();
+                let endTime = new Date(this.tableData[0].endTime).getTime();
+                if(currentTime-endTime>0){
+                  this.$message.warning('Your book which you have reserved is overdue, please cancel it')
+                  this.$router.push({
+                    path: '/borrowBookList'
+                  })
+                  return;
+                }
+                this.$confirm('You have the book reserved,Do you want to Check out it?','Check out',{
+                  confirmButtonText: 'Check out',
+                  cancelButtonText: 'not right now'
+                }).then(()=>{
+                    let params = {
+                      borrowBookId: this.tableData[0].id,
+                      bookNo : this.tableData[0].bookNo,
+                    }
+                    this.$http.post('/api/return/book',params).then(res=>{
+                      if(res.data.code !== 200){
+                        this.$message.warning(res.data.message);
+                        return;
+                      }})
+                  this.borrowBookForm.bookNo = this.tableData[0].bookNo
+                  this.borrowBook(0)
+                })
+              }})
             this.$http.post('/api/book/list',{}).then(res=>{
               this.bookOptions = res.data.data.list.map(item=>{
                 return{
@@ -202,33 +236,43 @@
                   }
                 }).filter(item => item.borrowIdentityNo === this.user.username && item.deleteFlag === 0 && item.kind == 1);
 
-                if (this.tableData.length > 1) {
-                  this.$message.warning('You can only advance no more than TWO books !');
-                } else {
-                  for (let i = 0; i < this.tableData.length; i++) {
-                      if (this.borrowBookForm.bookNo === this.tableData[i].bookNo) {
-                        this.$message.warning('DO NOT borrow the same book !');
-                        return
-                      }
-                  }
+                if (this.tableData.length > 0) {
+                  this.$message.warning('You can only reserve one books !');
+                  return
+                }
                   this.btnDisabled = false;
                   this.borrowBookForm.borrowIdentityNo = this.user.username;
                   this.borrowBookForm.startTime = this.borrowdate;
                   this.borrowBookForm.endTime = this.reservetime;
                   this.borrowBookForm.kind = kind;
                   let params = this.borrowBookForm;
-                  this.$http.post('/api/borrow/book/add', params).then(res => {
-                    if (res.data.code != 200) {
-                      this.$message.warning('Fail！');
-                      return;
+                  this.$http.post('/api/borrow/book/list', {}).then(res => {
+                    this.tableData = res.data.data.list.map(item => {
+                      return {
+                        ...item,
+                      }
+                    }).filter(item => item.borrowIdentityNo === this.user.username && item.deleteFlag === 0 && item.kind == 0);
+                    for (let i = 0; i < this.tableData.length; i++) {
+                      if (this.borrowBookForm.bookNo === this.tableData[i].bookNo) {
+                        this.$message.warning('DO NOT reserve the book you have borrowed !');
+                        return
+                      }
                     }
-                    this.$router.push({
-                      path: '/borrowBookList'
+                    this.$http.post('/api/borrow/book/add', params).then(res => {
+                      if (res.data.code != 200) {
+                        this.$message.warning('Fail！');
+                        return;
+                      }
+                      this.$router.push({
+                        path: '/borrowBookList'
+                      })
+                      this.$message.success('Success！');
                     })
-                    this.$message.success('Success！');
-                  })
+                    })
+                    })
+
                 }
-              })
+
             }
             // this.btnDisabled = false;
             // this.borrowBookForm.borrowIdentityNo = this.user.username;
@@ -246,7 +290,7 @@
             //   this.$message.success('Success！');
             // })
           }
-        }
+
     }
 
 

@@ -19,13 +19,21 @@
     <!--显示内容-->
     <edu-table :titles="tableTitle"
                :table-data="tableData"
-               :visible-operation="false"
-               :visible-return-book="true"
-               @returnBook="returnBook">
+               :visible-operation="false">
     </edu-table>
     <edu-page :current-page="query.pageNum"
               :page-size="query.pageSize"
-              :total="total"
+              :total="total1"
+              @handleSizeChange="handleSizeChange"
+              @handleCurrentChange="handleCurrentChange">
+    </edu-page>
+    <edu-table :titles="tableTitle"
+               :table-data="resveretableData"
+               :visible-operation="false">
+    </edu-table>
+    <edu-page :current-page="query.pageNum"
+              :page-size="query.pageSize"
+              :total="total2"
               @handleSizeChange="handleSizeChange"
               @handleCurrentChange="handleCurrentChange">
     </edu-page>
@@ -51,7 +59,9 @@
               {prop: 'returnDate',label: 'Return Time'},
             ],
             tableData: [],
-            total: 0
+            resveretableData:[],
+            total1: 0,
+            total2: 0
           }
         },
         mounted(){
@@ -68,8 +78,18 @@
                   startDate: item.startTime.substr(0,10),
                   returnDate: item.returnTime ? item.returnTime.substr(0,10) : '--',
                 }
-              });
-              this.total = Number.parseInt(res.data.data.total);
+              }).filter(item=>item.kind==0);
+              this.total1 = this.tableData.length
+            })
+            this.$http.post('/api/borrow/book/list',params).then(res=>{
+              this.resveretableData = res.data.data.list.map(item=>{
+                return {
+                  ...item,
+                  startDate: item.startTime.substr(0,10),
+                  returnDate: item.returnTime ? item.returnTime.substr(0,10) : '--',
+                }
+              }).filter(item=>item.kind==1);
+              this.total2 = this.resveretableData.length;
             })
           },
           searchBorrowBook(){
