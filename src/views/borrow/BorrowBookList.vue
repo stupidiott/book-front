@@ -26,20 +26,20 @@
     </edu-table>
     <edu-page :current-page="query.pageNum"
               :page-size="query.pageSize"
-              :total="total"
+              :total="total1"
               @handleSizeChange="handleSizeChange"
               @handleCurrentChange="handleCurrentChange">
     </edu-page>
     <h1>Reservation</h1>
     <edu-table :titles="reservetableTitle"
                :table-data="reservetableData"
-               :visible-operation="user.accountType==1"
-               :visible-return-book="user.accountType==1"
+               :visible-operation="true"
+               :visibleCancelReserve="true"
                @returnBook="returnBook">
     </edu-table>
     <edu-page :current-page="query.pageNum"
               :page-size="query.pageSize"
-              :total="total"
+              :total="total2"
               @handleSizeChange="handleSizeChange"
               @handleCurrentChange="handleCurrentChange">
     </edu-page>
@@ -78,7 +78,8 @@
             ],
             tableData: [],
             reservetableData:[],
-            total: 0
+            total1: 0,
+            total2: 0
           }
         },
         mounted(){
@@ -111,7 +112,7 @@
                     }
 
                   }).filter(item=>item.borrowIdentityNo === this.user.username && item.deleteFlag === 0&&item.kind==0);
-                  this.total = Number.parseInt(res.data.data.total)-1;
+                  this.total1 = this.tableData.length;
                 })
             }
             else{
@@ -126,7 +127,7 @@
                     expireFlag: currentTime>endTime ? '<span class="expireFlag">expired</span>' : 'unexpired'
                   }
                 }).filter(item=>item.deleteFlag === 0&&item.kind==0);
-                this.total = Number.parseInt(res.data.data.total);
+                this.total1 = this.tableData.length;
               })
             }
             if(this.user.accountType==4){
@@ -142,7 +143,7 @@
                   }
 
                 }).filter(item=>item.borrowIdentityNo === this.user.username && item.deleteFlag === 0&&item.kind==1);
-                this.total = Number.parseInt(res.data.data.total)-1;
+                this.total2 = this.reservetableData.length
               })
             }
             else{
@@ -157,7 +158,7 @@
                     expireFlag: currentTime>endTime ? '<span class="expireFlag">expired</span>' : 'unexpired'
                   }
                 }).filter(item=>item.deleteFlag === 0&&item.kind==1);
-                this.total = Number.parseInt(res.data.data.total);
+                this.total2 = this.reservetableData.length;
               })
             }
           },

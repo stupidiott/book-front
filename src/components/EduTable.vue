@@ -29,6 +29,7 @@
           <el-button type="text" size="small" @click="deleteRow(scope.row)" v-if="visibleDelete">Delete</el-button>
           <el-button type="text" size="small" @click="resetPassword(scope.row)" v-if="visibleResetPassword">Reset</el-button>
           <el-button type="text" size="small" @click="returnBook(scope.row)" v-if="visibleReturnBook">Return</el-button>
+          <el-button type="text" size="small" @click="returnBook(scope.row)" v-if="visibleCancelReserve">Cancel</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -74,10 +75,14 @@
                 type: Boolean,
                 default: false
             },
-            visibleReturnBook:{
+          visibleReturnBook:{
+            type: Boolean,
+            default: false
+          },
+            visibleCancelReserve:{
                 type: Boolean,
                 default: false
-            }
+            },
         },
         computed:{
           ...mapState(['user'])
