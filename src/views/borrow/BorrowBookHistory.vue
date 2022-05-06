@@ -8,7 +8,7 @@
     <edu-search>
       <el-row :gutter="4">
         <el-col :span="4">
-          <el-input v-model="query.bookNo" placeholder="enter book id" clearable @keyup.enter.native="searchBorrowBook" @click="searchBorrowBook" @clear="searchBorrowBook"></el-input>
+          <el-input v-model="query.bookNo" placeholder="enter ISBN" clearable @keyup.enter.native="searchBorrowBook" @click="searchBorrowBook" @clear="searchBorrowBook"></el-input>
         </el-col>
         <el-col :span="4">
           <el-button icon="el-icon-search" type="primary" @click="searchBorrowBook"></el-button>

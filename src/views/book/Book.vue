@@ -43,8 +43,13 @@
         width="800px"
         :before-close="handleClose">
         <el-form ref="bookFormRef" :rules="bookFormRul" :model="bookForm" label-width="120px">
-          <el-form-item label="Book Id：" prop="bookNo">
-            <el-input v-model="bookForm.bookNo" :disabled="isModify"></el-input>
+          <el-form-item label="ISBN：" prop="bookNo">
+            <el-col :span="20">
+              <el-input v-model="bookForm.bookNo" :disabled="isModify"></el-input>
+            </el-col>
+            <el-col :span="4">
+              <el-button @click="getBook">search</el-button>
+            </el-col>
           </el-form-item>
           <el-form-item label="Inventory：" prop="status">
             <el-input v-model="bookForm.status" ></el-input>
@@ -98,7 +103,7 @@
 <script>
 
     import bookApi from '@/api/book/bookApi'
-
+    import axios from 'axios'
     import parameterApi from '@/api/parameter/parameterApi'
     import {mapState} from "vuex";
 
@@ -130,7 +135,7 @@
             bookForm: JSON.parse(JSON.stringify(bookObj)),
             bookFormRul:{
               bookNo:[
-                {required: true,message: 'enter book id',trigger: 'blur'}
+                {required: true,message: 'enter ISBN',trigger: 'blur'}
               ],
               status:[
                 {required: true,message: 'enter inventory',trigger: 'blur'}
@@ -176,7 +181,7 @@
             total: 0,
           }
         },
-      computed:{
+        computed:{
         ...mapState(['user'])
       },
         mounted(){
@@ -184,6 +189,25 @@
           this.listParameter();
         },
         methods: {
+          getBook(){
+            let isbn = this.bookForm.bookNo;
+            let Url = 'https://openlibrary.org/isbn/' + isbn + '.json';
+            axios.get(Url).then(response => {
+              let authorUrl = 'https://openlibrary.org/' + response.data.authors[0].key + '.json'
+              axios.get(authorUrl).then(response2 =>{
+                this.bookForm.author = response2.data.name
+                console.log(response2.data)
+              })
+              this.bookForm.publisher = response.data.publishers[0]
+              this.bookForm.bookName = response.data.title
+              this.bookForm.remark = response.data.description
+              console.log(response.data)
+            }).catch(isbn)
+            {
+              if( isbn === '')
+                console.log('error')
+            }
+          },
           async listBook(){
             let params = this.query;
             const {data: res} = await bookApi.list('/api/book/list',params);
