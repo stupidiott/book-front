@@ -88,7 +88,7 @@
             <el-input v-model="bookForm.publisher"></el-input>
           </el-form-item>
           <el-form-item label="Description：" prop="remark">
-            <el-input type="textarea" rows="8" maxlength="200" show-word-limit v-model="bookForm.remark"></el-input>
+            <el-input type="textarea" rows="8" maxlength="500" show-word-limit v-model="bookForm.remark"></el-input>
           </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
@@ -190,6 +190,10 @@
         },
         methods: {
           getBook(){
+            this.bookForm.publisher = ''
+            this.bookForm.bookName = ''
+            this.bookForm.remark = ''
+            this.bookForm.author = ''
             let isbn = this.bookForm.bookNo;
             let Url = 'https://openlibrary.org/isbn/' + isbn + '.json';
             axios.get(Url).then(response => {
