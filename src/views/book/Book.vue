@@ -96,6 +96,37 @@
           <el-button type="primary" @click="submitForm">Confirm</el-button>
         </span>
       </el-dialog>
+      <el-dialog
+        :visible.sync="dialogVisible2"
+        width="73%"
+        top="5%"
+      :before-close="handleClose2"
+      >
+
+        <div class="btn">
+          <el-button type="primary" @click="clock" v-if="visiblebutton">Show barcode</el-button>
+        </div>
+        <svg id="abc1"></svg>
+        <svg id="abc2"></svg>
+        <svg id="abc3"></svg>
+        <svg id="abc4"></svg>
+        <svg id="abc5"></svg>
+        <svg id="abc6"></svg>
+        <svg id="abc7"></svg>
+        <svg id="abc8"></svg>
+        <svg id="abc9"></svg>
+        <svg id="abc10"></svg>
+        <svg id="abc11"></svg>
+        <svg id="abc12"></svg>
+        <svg id="abc13"></svg>
+        <svg id="abc14"></svg>
+        <svg id="abc15"></svg>
+        <svg id="abc16"></svg>
+        <svg id="abc17"></svg>
+        <svg id="abc18"></svg>
+        <svg id="abc19"></svg>
+        <svg id="abc20"></svg>
+      </el-dialog>
 
     </div>
 </template>
@@ -106,7 +137,7 @@
     import axios from 'axios'
     import parameterApi from '@/api/parameter/parameterApi'
     import {mapState} from "vuex";
-
+    import JsBarcode from "../../../JsBarcode";
     const bookObj = {
       bookNo: '',
       bookName: '',
@@ -126,6 +157,8 @@
           return{
             menuName: 'Book List',
             dialogVisible: false,
+            dialogVisible2: false,
+            visiblebutton:true,
             isModify: false,
             query: {
               bookName: '',
@@ -166,7 +199,7 @@
             floorOptions: [],
             categoryNameOptions: [],
             tableTitle: [
-              {prop: 'bookNo',label: 'Book Id' },
+              {prop: 'bookNo',label: 'ISBN' },
               {prop: 'bookName',label: 'Book Name' },
               {prop: 'author',label: 'Author'},
               {prop: 'Location',label: 'Location'},
@@ -179,16 +212,42 @@
             ],
             tableData: [],
             total: 0,
+            options :{
+              format:"CODE128",
+              displayValue:true,
+              fontSize:18,
+              height:100
+            },
+            drawTiming:'',
+            w:1,
+            q:''
           }
         },
         computed:{
-        ...mapState(['user'])
-      },
+        ...mapState(['user']),
+          },
         mounted(){
           this.listBook()
           this.listParameter();
         },
         methods: {
+          clock(){
+            this.q=this.bookForm.status
+            this.visiblebutton = false;
+            this.getBookCode();
+            this.drawTiming = setInterval(() => {
+              this.getBookCode();
+              if(this.q === 0){
+                clearInterval(this.drawTiming)
+              }
+            }, 1);
+          },
+          getBookCode(){
+              let url = this.bookForm.bookNo+this.w+this.bookForm.floor+this.bookForm.library
+              JsBarcode("#abc" + this.w, url, this.options);
+              this.w++
+              this.q--
+          },
           getBook(){
             this.bookForm.publisher = ''
             this.bookForm.bookName = ''
@@ -276,7 +335,9 @@
                   }
                   this.dialogVisible = false;
                   this.$message.success(requestObj.message);
+                  this.dialogVisible2 = true;
                   this.listBook();
+
                 }).catch(error=>{
                   this.$message.error(error);
                 })
@@ -334,6 +395,9 @@
           handleClose(){
             this.dialogVisible = false;
           },
+          handleClose2(){
+            this.dialogVisible2 = false;
+          },
           handleSizeChange(newSize){
             this.query.pageSize = newSize;
             this.listBook();
@@ -358,6 +422,10 @@
     .el-select{
       width: 100%;
     }
+  }
+  .btn{
+    text-align: center;
+    margin-top: 15px;
   }
 
 </style>
