@@ -102,30 +102,11 @@
         top="5%"
       :before-close="handleClose2"
       >
-
-        <div class="btn">
-          <el-button type="primary" @click="clock" v-if="visiblebutton">Show barcode</el-button>
+        <div class="trayContent" >
+          <div class="trayItem"  v-for="(item,index) in trayList" :key="index">
+            <canvas :id="'trayItem'+index"  style="width:200px;height:80px;" :key="index"></canvas>
+          </div>
         </div>
-        <svg id="abc1"></svg>
-        <svg id="abc2"></svg>
-        <svg id="abc3"></svg>
-        <svg id="abc4"></svg>
-        <svg id="abc5"></svg>
-        <svg id="abc6"></svg>
-        <svg id="abc7"></svg>
-        <svg id="abc8"></svg>
-        <svg id="abc9"></svg>
-        <svg id="abc10"></svg>
-        <svg id="abc11"></svg>
-        <svg id="abc12"></svg>
-        <svg id="abc13"></svg>
-        <svg id="abc14"></svg>
-        <svg id="abc15"></svg>
-        <svg id="abc16"></svg>
-        <svg id="abc17"></svg>
-        <svg id="abc18"></svg>
-        <svg id="abc19"></svg>
-        <svg id="abc20"></svg>
       </el-dialog>
 
     </div>
@@ -218,9 +199,7 @@
               fontSize:18,
               height:100
             },
-            drawTiming:'',
-            w:1,
-            q:''
+            trayList:[]
           }
         },
         computed:{
@@ -231,22 +210,12 @@
           this.listParameter();
         },
         methods: {
-          clock(){
-            this.q=this.bookForm.status
-            this.visiblebutton = false;
-            this.getBookCode();
-            this.drawTiming = setInterval(() => {
-              this.getBookCode();
-              if(this.q === 0){
-                clearInterval(this.drawTiming)
-              }
-            }, 1);
-          },
-          getBookCode(){
-              let url = this.bookForm.bookNo+this.w+this.bookForm.floor+this.bookForm.library
-              JsBarcode("#abc" + this.w, url, this.options);
-              this.w++
-              this.q--
+          genCode(){
+            this.$nextTick(()=>{
+              this.trayList.forEach((item,index)=>{
+                JsBarcode('#trayItem'+index, item, this.options);
+              })
+            })
           },
           getBook(){
             this.bookForm.publisher = ''
@@ -336,6 +305,12 @@
                   this.dialogVisible = false;
                   this.$message.success(requestObj.message);
                   this.dialogVisible2 = true;
+                  let flag = this.bookForm.status
+                  this.trayList=[]
+                  for(let i = 1;i <= flag;i++ ){
+                    this.trayList.push(this.bookForm.bookNo+i)
+                  }
+                  this.genCode()
                   this.listBook();
 
                 }).catch(error=>{
@@ -427,5 +402,21 @@
     text-align: center;
     margin-top: 15px;
   }
-
+  .trayContent{
+    display:flex;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .trayItem{
+    margin-top:35px;
+    margin-right:10px;
+    width:200px;
+    height:80px;
+    background:white;
+    display:flex;
+    flex-wrap:wrap;
+    align-items: center;
+    justify-content: center;
+    border:1px solid #e8e8e8;
+  }
 </style>

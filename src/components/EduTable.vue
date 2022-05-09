@@ -30,6 +30,7 @@
           <el-button type="text" size="small" @click="resetPassword(scope.row)" v-if="visibleResetPassword">Reset</el-button>
           <el-button type="text" size="small" @click="returnBook(scope.row)" v-if="visibleReturnBook">Return</el-button>
           <el-button type="text" size="small" @click="returnBook(scope.row)" v-if="visibleCancelReserve">Cancel</el-button>
+          <el-button type="text" size="small" @click="showBarcode(scope.row)" v-if="visibleBarcode">Barcode</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -83,6 +84,10 @@
                 type: Boolean,
                 default: false
             },
+          visibleBarcode:{
+            type: Boolean,
+            default: false
+          },
         },
         computed:{
           ...mapState(['user'])
@@ -110,7 +115,10 @@
               if(row.deleteFlag === 1 && column.property === 'deleteFlagStr'){
                 return 'color:red'
               }
-            }
+            },
+            showBarcode(row){
+            this.$emit('showBarcode',row);
+            },
         }
     }
 </script>

@@ -26,12 +26,11 @@
                    :visible-operation="true"
                    :visible-delete="false"
                    :visible-edit="false"
-                   :visible-setting-auth="true"
-                   :visible-switch="true"
                    :visible-reset-password="true"
+                   :visible-barcode="true"
                    @settingAuth="settingAuth"
                    @resetPassword="resetPassword"
-                   @editRow="editAccount"
+                   @showBarcode="showBarcode"
                    @changeStatus="changeStatus">
         </edu-table>
         <edu-page :current-page="query.pageNum"
@@ -83,6 +82,13 @@
           <el-button type="primary" @click="submitResetPassword">Confirm</el-button>
         </span>
       </el-dialog>
+      <el-dialog
+        :visible.sync="dialogVisible2"
+        width="73%"
+        top="5%"
+        :before-close="handleClose2">
+        <svg id="abc"></svg>
+      </el-dialog>
     </div>
 </template>
 
@@ -92,6 +98,7 @@
     import ElRadio from "element-ui/packages/radio/src/radio";
     import {mapState} from 'vuex'
     import common from '@/api/common/common.js'
+    import JsBarcode from "../../../JsBarcode";
 
     export default {
       components: {ElRadio},
@@ -101,7 +108,10 @@
                 menuName: 'Account Management',
                 loading: false,
                 dialogVisible: false,
+                dialogVisible2: false,
                 authDialogVisible: false,
+                url:'123',
+                drawTiming:'',
                 resetPasswordDialogVisible:false,
                 accountTypeOptions: [
                   {
@@ -156,6 +166,7 @@
 
         mounted(){
           this.getAccountList();
+          this.barcode();
         },
 
         computed:{
@@ -239,7 +250,24 @@
                     }
                 })
             },
-
+            showBarcode(row){
+              this.dialogVisible2 = true
+              if(this.accountForm.username=='')
+                  this.url = row.username
+              else
+                this.url = this.accountForm.username
+              JsBarcode("#abc", this.url, this.options);
+            },
+            barcode(){
+              let w = 0
+              this.drawTiming = setInterval(() => {
+                JsBarcode("#abc", this.url, this.options);
+                w++
+                if(w === 1){
+                  clearInterval(this.drawTiming)
+                }
+              }, 1);
+            },
             addAccount(){
               this.dialogVisible = true;
               common.resetFields(this,'accountFormRef');
@@ -262,6 +290,8 @@
                             }
                             this.dialogVisible = false;
                             this.$message.success("添加成功");
+                            this.showBarcode();
+                            this.accountForm = {}
                             this.getAccountList();
                         }).catch(error=>{
                             this.$message.error(error);
@@ -271,11 +301,6 @@
                     }
                 });
             },
-
-            editAccount(){
-
-            },
-
             settingAuth(row){
                 this.authDialogVisible = true;
 
@@ -342,14 +367,13 @@
               this.getAccountList();
             },
 
-            handleSelectClazz(selectValue){
-                this.accountAuthForm.clazzIdList = selectValue;
-            },
 
             handleClose(){
                 this.dialogVisible = false;
             },
-
+            handleClose2(){
+                this.dialogVisible2 = false;
+            },
             searchUser(){
                 this.getAccountList();
             },
@@ -373,6 +397,11 @@
       display: block;
       line-height: 40px;
     }
+  }
+  .el-dialog .el-dialog__body{
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
 </style>

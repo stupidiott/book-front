@@ -11,6 +11,8 @@
                 <el-dropdown-item class="setting">
                   <el-button type="text" @click="modifyPassword">Modify</el-button>
                   <el-divider></el-divider>
+                  <el-button type="text" @click="showBarcode">Barcode</el-button>
+                  <el-divider></el-divider>
                   <el-button type="text" @click="logout">Exit</el-button>
                 </el-dropdown-item>
               </el-dropdown-menu>
@@ -72,6 +74,15 @@
           <el-button type="primary" @click="submitModifyPassword">Confirm</el-button>
         </span>
       </el-dialog>
+      <el-dialog
+        :visible.sync="dialogVisible"
+        width="73%"
+        top="5%"
+        :before-close="handleClose">
+        <div  v-for="(item,index) in trayList2" :key="index">
+          <canvas :id="'trayItem'+index"  style="width:200px;height:80px;" :key="index"></canvas>
+        </div>
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -80,6 +91,7 @@
 
   import Storage from '@/utils/localStorage'
   import {mapState} from 'vuex'
+  import JsBarcode from "../../../JsBarcode";
 
   const schoolName = window.PLATFORM_CONFIG.schoolName;
 
@@ -90,7 +102,7 @@
         homeUrl: '/home',
         menuList: '',
         modifyPasswordDialogVisible:false,
-        schoolName: schoolName,
+        dialogVisible:false,
         accountModifyPasswordForm: {
           oldPassword: '',
           newPassword: '',
@@ -106,7 +118,8 @@
           confirmNewPassword: [
             { required: true, message: 'New password cannot be empty', trigger: 'blur' }
           ]
-        }
+        },
+        trayList2:[],
       }
     },
     computed: {
@@ -140,6 +153,21 @@
             // 跳转到首页
             this.$router.push("/login");
         },
+      showBarcode(){
+        this.$http.post('/api/borrow/book/list',{}).then(res=>{
+          this.trayList2.push(this.user.username)
+          this.$nextTick(()=>{
+            this.trayList2.forEach((item,index)=>{
+              JsBarcode('#trayItem'+index, item, this.options);
+            })
+          })
+        })
+        this.dialogVisible=true
+        this.trayList2=[]
+      },
+      handleClose(){
+          this.dialogVisible = false;
+      },
         modifyPassword(){
             this.modifyPasswordDialogVisible = true;
             this.accountModifyPasswordForm = {}

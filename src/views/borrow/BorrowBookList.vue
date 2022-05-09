@@ -20,9 +20,11 @@
     <h1>Borrow</h1>
     <edu-table :titles="tableTitle"
                :table-data="tableData"
-               :visible-operation="user.accountType==1"
+               :visible-operation="true"
                :visible-return-book="user.accountType==1"
-               @returnBook="returnBook">
+               :visible-barcode="true"
+               @returnBook="returnBook"
+               @showBarcode="showBarcode">
     </edu-table>
     <edu-page :current-page="query.pageNum"
               :page-size="query.pageSize"
@@ -35,7 +37,9 @@
                :table-data="reservetableData"
                :visible-operation="true"
                :visibleCancelReserve="true"
-               @returnBook="returnBook">
+               :visible-barcode="true"
+               @returnBook="returnBook"
+               @showBarcode="showBarcode">>
     </edu-table>
     <edu-page :current-page="query.pageNum"
               :page-size="query.pageSize"
@@ -43,12 +47,21 @@
               @handleSizeChange="handleSizeChange"
               @handleCurrentChange="handleCurrentChange">
     </edu-page>
+    <el-dialog
+      :visible.sync="dialogVisible"
+      width="73%"
+      top="5%"
+      :before-close="handleClose">
+        <div  v-for="(item,index) in trayList" :key="index">
+          <canvas :id="'trayItem'+index"  style="width:200px;height:80px;" :key="index"></canvas>
+        </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
     import {mapState} from "vuex";
-
+    import JsBarcode from "../../../JsBarcode";
     export default {
         name: "borrow-book",
         data(){
@@ -62,6 +75,7 @@
             },
             tableTitle: [
               {prop: 'bookNo',label: 'Borrow Book ISBN' ,width: 300},
+              {prop: 'bookId',label: 'Borrow Book Id' ,width: 300},
               {prop: 'bookName',label: 'Borrow Book Name' ,width: 300},
               {prop: 'borrowIdentityNo',label: 'Borrower' ,width: 240},
               {prop: 'startDate',label: 'Borrow Time',width: 300},
@@ -70,6 +84,7 @@
             ],
             reservetableTitle: [
               {prop: 'bookNo',label: 'Reserve Book ISBN' ,width: 300},
+              {prop: 'bookId',label: 'Reserve Book Id' ,width: 300},
               {prop: 'bookName',label: 'Reserve Book Name' ,width: 300},
               {prop: 'borrowIdentityNo',label: 'Borrower' ,width: 240},
               {prop: 'startDate',label: 'Reserve Time',width: 300},
@@ -77,9 +92,20 @@
               {prop: 'expireFlag',label: 'Expired',width: 300,isHtml: true}
             ],
             tableData: [],
+            tableData3:[],
             reservetableData:[],
             total1: 0,
-            total2: 0
+            total2: 0,
+            dialogVisible:false,
+            url:"12345678",
+            drawTiming:'',
+            options :{
+              format:"CODE128",
+              displayValue:true,
+              fontSize:18,
+              height:100
+            },
+            trayList:[]
           }
         },
         mounted(){
@@ -185,6 +211,24 @@
               }).catch(error=>{})
             }).catch(()=>{})
           },
+          showBarcode(row){
+            this.$http.post('/api/borrow/book/list',{}).then(res=>{
+                this.tableData3 = res.data.data.list.map(item=>{
+                  return {
+                    ...item,
+                    bookId:item.bookId
+                  }
+                }).filter(item=>item.borrowIdentityNo === this.user.username&&item.bookNo === row.bookNo||this.user.accountType==1&&item.bookId === row.bookId);
+               this.trayList.push(this.tableData3[0].bookId)
+              this.$nextTick(()=>{
+               this.trayList.forEach((item,index)=>{
+                JsBarcode('#trayItem'+index, item, this.options);
+               })
+             })
+            })
+            this.dialogVisible=true
+            this.trayList=[]
+          },
           handleSizeChange(newValue){
             this.query.pageSize = newValue;
             this.listBorrowBook();
@@ -193,6 +237,9 @@
             this.query.pageNum = newValue;
             this.listBorrowBook();
           },
+          handleClose(){
+            this.dialogVisible = false
+          }
         }
     }
 </script>
@@ -202,5 +249,10 @@
     .expireFlag{
       color: red;
     }
+  }
+  .el-dialog .el-dialog__body{
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 </style>
