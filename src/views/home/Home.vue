@@ -86,18 +86,19 @@
         },
         methods: {
           pay(){
+            let url = 'http://127.0.0.1:8081/onlinepay?name=' + this.user.username+'&price='+this.debt+'&paytype=1'
+            window.open(url,'_self')
             let params = {
               username: this.user.username
             }
-            this.$http.post('/api/return/expiredbook',params).then(res=>{
-              if(res.data.code !== 200){
-                this.$message.warning(res.data.message);
-                return;
-              }
-              this.user.debt = 0;
-              this.$message.success("success");
-              this.reload();
-            })
+            // this.$http.post('/api/return/expiredbook',params).then(res=>{
+            //   if(res.data.code !== 200){
+            //     this.$message.warning(res.data.message);
+            //     return;
+            //   }
+            //   this.user.debt = 0;
+            //   this.reload();
+            // })
           },
            notice(){
              this.$http.post('/api/account/list',{}).then(res=>{
