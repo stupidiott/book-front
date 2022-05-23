@@ -60,6 +60,7 @@
         <div class="btn">
           <el-button type="primary" @click="borrowBook(0)" :disabled="btnDisabled">borrow</el-button>
           <el-button type="primary" @click="borrowBook(1)" :disabled="btnDisabled">reserve</el-button>
+          <el-button type="primary" @click="borrowAllReservedBook" :disabled="btnDisabled">borrow all books you have reserved</el-button>
         </div>
       </div>
   </div>
@@ -105,6 +106,33 @@
         // }
       },
         methods:{
+          borrowAllReservedBook(){
+            this.$http.post('/api/borrow/book/list', {}).then(res => {
+              this.tableData = res.data.data.list.map(item => {
+                return {
+                  ...item,
+                }
+              }).filter(item => item.borrowIdentityNo === this.user.username && item.deleteFlag === 0 && item.kind == 1);
+              if (this.tableData.length > 0) {
+                let currentTime = new Date().getTime();
+                let endTime = new Date(this.tableData[0].endTime).getTime();
+                for(let i = 0; i < this.tableData.length; i++)
+                {
+                  let params = {
+                    borrowBookId: this.tableData[i].id,
+                    bookNo : this.tableData[i].bookNo,
+                  }
+                  this.$http.post('/api/return/book',params).then(res=>{
+                    if(res.data.code !== 200){
+                      this.$message.warning(res.data.message);
+                      return;
+                    }})
+                  this.borrowBookForm.bookNo = this.tableData[i].bookNo
+                  this.borrowBook(0)
+                }
+
+              }})
+          },
           listBook(){
             if(this.user.debt!=0){
               this.$router.push({
@@ -236,8 +264,8 @@
                   }
                 }).filter(item => item.borrowIdentityNo === this.user.username && item.deleteFlag === 0 && item.kind == 1);
 
-                if (this.tableData.length > 0) {
-                  this.$message.warning('You can only reserve one books !');
+                if (this.tableData.length > 1) {
+                  this.$message.warning('You can only reserve two books !');
                   return
                 }
                   this.btnDisabled = false;

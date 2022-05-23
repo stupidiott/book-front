@@ -52,6 +52,9 @@
         <el-form-item label="Password：">
           <el-input placeholder="The default password is 123456" disabled="true"></el-input>
         </el-form-item>
+        <el-form-item label="Email：" prop="email">
+          <el-input v-model="accountForm.email"></el-input>
+        </el-form-item>
         <el-form-item label="Usertype：" prop="accountType">
           <edu-select @handleSelectValue="handleSelectAccountType" :value="accountForm.accountType" :options="accountTypeOptions"></edu-select>
         </el-form-item>
@@ -128,6 +131,7 @@
                     password: '',
                     accountType: '',
                     debt:'',
+                    email:'',
                 },
                 accountAuthForm:{
                     id: '',

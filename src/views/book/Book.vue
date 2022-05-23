@@ -21,6 +21,13 @@
         <el-button type="primary" size="small" v-if="user.accountType==1" @click="addBook">Add book</el-button>
       </div>
 
+      <div style="margin-top: 10px">
+        <el-button type="primary" size="small" v-if="user.accountType==1" @click="addLocation">Add location</el-button>
+      </div>
+
+      <div style="margin-top: 10px">
+        <el-button type="primary" size="small" v-if="user.accountType==1" @click="addCategory">Add category</el-button>
+      </div>
       <!--显示内容-->
       <edu-table :titles="tableTitle"
                  :table-data="tableData"
@@ -109,6 +116,47 @@
         </div>
       </el-dialog>
 
+      <el-dialog
+        :title="isModify1='Add Location'"
+        :visible.sync="dialogVisible3"
+        width="800px"
+        :before-close="handleClose">
+        <el-form >
+          <el-form-item label="Library Type：" prop="library">
+            <el-select v-model="para.parameter_type" placeholder="请选择" >
+              <el-option
+                v-for="item in options1"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="specific location：" prop="parameter_key">
+            <el-input v-model="para.parameter_key"></el-input>
+          </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="dialogVisible3 = false">Cancel</el-button>
+          <el-button type="primary" @click="submitLocationForm">Confirm</el-button>
+        </span>
+      </el-dialog>
+
+      <el-dialog
+        :title="ismodify2='Add Category'"
+        :visible.sync="dialogVisible4"
+        width="800px"
+        :before-close="handleClose">
+        <el-form>
+          <el-form-item label="category：" prop="temp">
+            <el-input v-model="para.temp"></el-input>
+          </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="dialogVisible4 = false">Cancel</el-button>
+          <el-button type="primary" @click="submitCategoryForm">Confirm</el-button>
+        </span>
+      </el-dialog>
+
     </div>
 </template>
 
@@ -136,11 +184,22 @@
         name: "book",
         data(){
           return{
+            para:{
+              parameter_type:'',
+              parameter_key:'',
+              parameter_value:'',
+              temp:'',
+              delete_flag:'0',
+            },
             menuName: 'Book List',
             dialogVisible: false,
             dialogVisible2: false,
+            dialogVisible3:false,
+            dialogVisible4:false,
             visiblebutton:true,
             isModify: false,
+            isModify1:false,
+            ismodify2:false,
             query: {
               bookName: '',
               pageNum: 1,
@@ -199,7 +258,12 @@
               fontSize:18,
               height:100
             },
-            trayList:[]
+            trayList:[],
+
+            options1:[
+              {value:'library_name',label:'library'},
+              {value:'floor_num',label:'floor'}
+            ]
           }
         },
         computed:{
@@ -210,6 +274,14 @@
           this.listParameter();
         },
         methods: {
+          addLocation(){
+            this.dialogVisible3 = true;
+            this.isModify1 = false
+          },
+          addCategory(){
+            this.dialogVisible4 = true;
+            this.ismodify2 = false
+          },
           genCode(){
             this.$nextTick(()=>{
               this.trayList.forEach((item,index)=>{
@@ -321,6 +393,35 @@
               }
             });
           },
+          submitLocationForm(){
+            this.para.parameter_value = this.para.parameter_key;
+            this.$http.post('/api/parameter/add',this.para).then(res=>{
+              if(res.data.code !== 200){
+                this.$message.warning(res.data.message);
+                return;
+              }
+              this.dialogVisible3 = false;
+              this.$message.success("success");
+              this.listParameter()
+              // this.dialogVisible2=true;
+            })
+          },
+          submitCategoryForm(){
+            this.para.parameter_key = this.para.temp;
+            this.para.parameter_value = this.para.temp;
+            this.para.parameter_type = "book_type";
+            this.$http.post('/api/parameter/add',this.para).then(res=>{
+              if(res.data.code !== 200){
+                this.$message.warning(res.data.message);
+                return;
+              }
+              this.dialogVisible4 = false;
+              this.$message.success("success");
+              this.listParameter()
+              // this.reload()
+              // this.dialogVisible2=true;
+            })
+          },
           addBook(){
             this.dialogVisible = true;
             this.isModify = false;
@@ -357,6 +458,9 @@
             }).catch(()=>{
 
             })
+          },
+          handleSelectLibrarynew(value){
+            this.para.parameter_type = value;
           },
           handleSelectCategoryName(value){
             this.bookForm.categoryName = value;

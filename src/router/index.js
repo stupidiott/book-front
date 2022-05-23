@@ -64,6 +64,16 @@ const routers = [
         path: '/expire',
         name: 'Expire',
         component: ()=>import('@/views/expire/Expire.vue')
+      },
+      {
+        path:'/libraryDashboard',
+        name:'Dashboard',
+        component: ()=>import('@/views/dashboard/LibraryDashboard.vue')
+      },
+      {
+        path:'/bookDashboard',
+        name:'Dashborad',
+        component: ()=>import('@/views/dashboard/BookDashboard.vue')
       }
     ]
   },

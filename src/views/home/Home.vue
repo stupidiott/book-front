@@ -40,6 +40,22 @@
           </tr>
           <tr>
             <td class="title">
+              Lost books
+            </td>
+            <td>
+              <div >You have lost {{this.lost}} books now</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="title">
+              Damage books
+            </td>
+            <td>
+              <div >You have damaged {{this.damage}} books now</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="title">
               The amount should pay for：
             </td>
             <td>
@@ -68,7 +84,9 @@
             borrow:5,
             reserve:2,
             borrowexpireFlag:'no',
-            reserveexpireFlag:'no'
+            reserveexpireFlag:'no',
+            lost:0,
+            damage:0
           }
         },
         mounted(){

@@ -11,6 +11,8 @@
                 <el-dropdown-item class="setting">
                   <el-button type="text" @click="modifyPassword">Modify</el-button>
                   <el-divider></el-divider>
+                  <el-button type="text" @click="modifyEmail">Modify Email</el-button>
+                  <el-divider></el-divider>
                   <el-button type="text" @click="showBarcode">Barcode</el-button>
                   <el-divider></el-divider>
                   <el-button type="text" @click="logout">Exit</el-button>
@@ -84,7 +86,41 @@
         </div>
       </el-dialog>
     </div>
+    <!-- modify email -->
+    <div>
+      <el-dialog
+        title="Modify email"
+        :visible.sync="modifyEmailDialogVisible"
+        width="30%"
+      >
+        <el-form ref="accountModifyEmailFormRef" :rules="accountModifyEmailFormRule" :model="accountModifyEmailForm" label-width="180px">
+          <el-form-item label="Enter old email：" prop="oldEmail">
+            <el-input v-model="accountModifyEmailForm.oldEmail" type="email"></el-input>
+          </el-form-item>
+          <el-form-item label="Enter new email：" prop="newEmail">
+            <el-input v-model="accountModifyEmailForm.newEmail" type="email"></el-input>
+          </el-form-item>
+          <el-form-item label="Enter again：" prop="confirmNewEmail">
+            <el-input v-model="accountModifyEmailForm.confirmNewEmail" type="email"></el-input>
+          </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="modifyEmailDialogVisible = false">Cancel</el-button>
+          <el-button type="primary" @click="submitModifyEmail">Confirm</el-button>
+        </span>
+      </el-dialog>
+      <el-dialog
+        :visible.sync="dialogVisible"
+        width="73%"
+        top="5%"
+        :before-close="handleClose">
+        <div  v-for="(item,index) in trayList2" :key="index">
+          <canvas :id="'trayItem'+index"  style="width:200px;height:80px;" :key="index"></canvas>
+        </div>
+      </el-dialog>
+    </div>
   </div>
+
 </template>
 
 <script>
@@ -102,6 +138,7 @@
         homeUrl: '/home',
         menuList: '',
         modifyPasswordDialogVisible:false,
+        modifyEmailDialogVisible:false,
         dialogVisible:false,
         accountModifyPasswordForm: {
           oldPassword: '',
@@ -119,6 +156,23 @@
             { required: true, message: 'New password cannot be empty', trigger: 'blur' }
           ]
         },
+        accountModifyEmailForm: {
+          oldEmail: '',
+          newEmail: '',
+          confirmNewEmail: ''
+        },
+        accountModifyEmailFormRule:{
+          oldEmail: [
+            { required: true, message: 'Old email cannot be empty', trigger: 'blur' }
+          ],
+          newEmail: [
+            { required: true, message: 'New email cannot be empty', trigger: 'blur' }
+          ],
+          confirmNewEmail: [
+            { required: true, message: 'New email cannot be empty', trigger: 'blur' }
+          ]
+        },
+
         trayList2:[],
       }
     },
@@ -172,6 +226,10 @@
             this.modifyPasswordDialogVisible = true;
             this.accountModifyPasswordForm = {}
         },
+        modifyEmail(){
+          this.modifyEmailDialogVisible = true;
+          this.accountModifyEmailForm = {}
+        },
         submitModifyPassword(){
 
           let vm = this;
@@ -196,7 +254,33 @@
               return false;
             }
           });
-        }
+        },
+
+      submitModifyEmail(){
+
+        let vm = this;
+
+        this.$refs.accountModifyEmailFormRef.validate((valid) => {
+          if (valid) {
+
+            if(this.accountModifyEmailForm.newEmail !== this.accountModifyEmailForm.confirmNewEmail){
+              return this.$message.warning("The two input emails are not the same");
+            }
+
+            this.$http.post("/api/account/modify/email",vm.accountModifyEmailForm).then(res=>{
+              if(res.data.code !== 200){
+                return this.$message.warning(res.data.message);
+              }
+              this.modifyEmailDialogVisible = true;
+              this.$message.success("Success");
+            }).catch(error=>{
+              this.$message.error(error);
+            })
+          } else {
+            return false;
+          }
+        });
+      }
     }
   };
 </script>
