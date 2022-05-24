@@ -31,6 +31,7 @@
 
 <script>
   import Card from '../../components/Card.vue'
+  import {mapState} from "vuex";
   export default {
     name: 'bookdashboard',
     components: {
@@ -38,13 +39,40 @@
     },
     data () {
       return{
+        query: {
+          bookNo: '',
+          pageNum: 1,
+          pageSize: 10,
+          borrowIdentityNo: ''
+        },
+        tableData: [],
         menuName:"Book Dashboard",
-        number1:3,color1:"#AFEEEE",el1:"el-icon-reading",
-        number2:2,color2:"#BA55D3",el2:"el-icon-copy-document",
-        number3:100,color3:"#32CD32",el3:"el-icon-edit-outline",
-        number4:"normal",color4:"#F08080",el4:"el-icon-s-opportunity"
+        number1:'',color1:"#AFEEEE",el1:"el-icon-reading",
+        number2:'不会算',color2:"#BA55D3",el2:"el-icon-copy-document",
+        number3:'不会算',color3:"#32CD32",el3:"el-icon-edit-outline",
+        number4:'不会算',color4:"#F08080",el4:"el-icon-s-opportunity"
+      }
+    },
+    mounted() {
+      this.borrowNum()
+    },
+    computed: {
+      // 第一种写法
+      ...mapState(['user','token'])
+    },
+    methods:{
+      borrowNum() {
+        this.$http.post('/api/borrow/book/list',this.query).then(res=>{
+          this.tableData = res.data.data.list.map(item=>{
+            return {
+              ...item,
+            }
+          }).filter(item=>item.borrowIdentityNo === this.user.username && item.deleteFlag === 0&&item.kind===0);
+          this.number1 = this.tableData.length;
+        })
       }
     }
+
   }
 </script>
 
