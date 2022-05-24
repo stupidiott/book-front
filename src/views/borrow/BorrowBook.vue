@@ -19,7 +19,47 @@
                 Title：
               </td>
               <td>
-                <el-select v-model="borrowBookForm.bookNo" filterable placeholder="Select a book ">
+                <el-select v-model="borrowBookForm[0].bookNo" filterable placeholder="Select a book1 ">
+                  <el-option
+                    v-for="(item,index) in bookOptions"
+                    :key="index"
+                    :label="item.label"
+                    :value="item.value" >
+                    <span style="float: left">{{ item.label }}</span>
+                    <span style="float: right; color: #8492a6; font-size: 13px">{{ item.status }} copies</span>
+                  </el-option>
+                </el-select>
+                <el-select v-model="borrowBookForm[1].bookNo" filterable placeholder="Select a book2 " v-show="selectvisible>=1">
+                  <el-option
+                    v-for="(item,index) in bookOptions"
+                    :key="index"
+                    :label="item.label"
+                    :value="item.value" >
+                    <span style="float: left">{{ item.label }}</span>
+                    <span style="float: right; color: #8492a6; font-size: 13px">{{ item.status }} copies</span>
+                  </el-option>
+                </el-select>
+                <el-select v-model="borrowBookForm[2].bookNo" filterable placeholder="Select a book3 " v-show="selectvisible>=2">
+                  <el-option
+                    v-for="(item,index) in bookOptions"
+                    :key="index"
+                    :label="item.label"
+                    :value="item.value" >
+                    <span style="float: left">{{ item.label }}</span>
+                    <span style="float: right; color: #8492a6; font-size: 13px">{{ item.status }} copies</span>
+                  </el-option>
+                </el-select>
+                <el-select v-model="borrowBookForm[3].bookNo" filterable placeholder="Select a book4 "v-show="selectvisible>=3">
+                  <el-option
+                    v-for="(item,index) in bookOptions"
+                    :key="index"
+                    :label="item.label"
+                    :value="item.value" >
+                    <span style="float: left">{{ item.label }}</span>
+                    <span style="float: right; color: #8492a6; font-size: 13px">{{ item.status }} copies</span>
+                  </el-option>
+                </el-select>
+                <el-select v-model="borrowBookForm[4].bookNo" filterable placeholder="Select a book5 " v-show="selectvisible>=4">
                   <el-option
                     v-for="(item,index) in bookOptions"
                     :key="index"
@@ -60,15 +100,26 @@
         <div class="btn">
           <el-button type="primary" @click="borrowBook(0)" :disabled="btnDisabled">borrow</el-button>
           <el-button type="primary" @click="borrowBook(1)" :disabled="btnDisabled">reserve</el-button>
-          <el-button type="primary" @click="borrowAllReservedBook" :disabled="btnDisabled">borrow all books you have reserved</el-button>
         </div>
       </div>
+    <el-dialog
+      :visible.sync="visible"
+      width="73%"
+      top="5%"
+      :before-close="handleClose"
+    >
+      <div class="trayContent" >
+        <div class="trayItem"  v-for="(item,index) in trayList" :key="index">
+          <canvas :id="'trayItem'+index"  style="width:200px;height:80px;" :key="index"></canvas>
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
     import {mapState} from "vuex";
-
+    import JsBarcode from "jsbarcode";
     export default {
         name: "borrow-book",
         data(){
@@ -77,19 +128,71 @@
             btnDisabled: false,
             bookOptions: [],
             tableData: [],
+            tableData3:[],
+            trayList:[],
+            visible:false,
+            selectvisible:'0',
             borrowdate:'',
             returndate:'',
             reservetime:'',
-            borrowBookForm:{
-              borrowIdentityNo: '',
-              bookNo: '',
-              startTime: '',
-              endTime: '',
-              status:'',
-              kind:''
-            }
+            options :{
+              format:"CODE128",
+              displayValue:true,
+              fontSize:18,
+              height:100
+            },
+            borrowBookForm:[
+              {
+                borrowIdentityNo: '',
+                bookNo: '',
+                startTime: '',
+                endTime: '',
+                status:'',
+                kind:''
+              },
+              {
+                borrowIdentityNo: '',
+                bookNo: '',
+                startTime: '',
+                endTime: '',
+                status:'',
+                kind:''
+              },
+              {
+                borrowIdentityNo: '',
+                bookNo: '',
+                startTime: '',
+                endTime: '',
+                status:'',
+                kind:''
+              },
+              {
+                borrowIdentityNo: '',
+                bookNo: '',
+                startTime: '',
+                endTime: '',
+                status:'',
+                kind:''
+              },
+              {
+                borrowIdentityNo: '',
+                bookNo: '',
+                startTime: '',
+                endTime: '',
+                status:'',
+                kind:''
+              },
+            ]
           }
         },
+      watch: {
+        borrowBookForm: {
+          handler(newVal) {
+            this.addselect()
+          },
+          deep: true
+        }
+      },
         mounted(){
           this.listBook();
           this.time();
@@ -106,33 +209,6 @@
         // }
       },
         methods:{
-          borrowAllReservedBook(){
-            this.$http.post('/api/borrow/book/list', {}).then(res => {
-              this.tableData = res.data.data.list.map(item => {
-                return {
-                  ...item,
-                }
-              }).filter(item => item.borrowIdentityNo === this.user.username && item.deleteFlag === 0 && item.kind == 1);
-              if (this.tableData.length > 0) {
-                let currentTime = new Date().getTime();
-                let endTime = new Date(this.tableData[0].endTime).getTime();
-                for(let i = 0; i < this.tableData.length; i++)
-                {
-                  let params = {
-                    borrowBookId: this.tableData[i].id,
-                    bookNo : this.tableData[i].bookNo,
-                  }
-                  this.$http.post('/api/return/book',params).then(res=>{
-                    if(res.data.code !== 200){
-                      this.$message.warning(res.data.message);
-                      return;
-                    }})
-                  this.borrowBookForm.bookNo = this.tableData[i].bookNo
-                  this.borrowBook(0)
-                }
-
-              }})
-          },
           listBook(){
             if(this.user.debt!=0){
               this.$router.push({
@@ -216,108 +292,155 @@
             return num;
           },
           borrowBook(kind){
-            if(this.borrowBookForm.bookNo==''){
-              this.$message.warning('Please select a book !');
-              return;
-            }
-            if(kind==0) {
-              this.$http.post('/api/borrow/book/list', {}).then(res => {
-                this.tableData = res.data.data.list.map(item => {
-                  return {
-                    ...item,
-                  }
-                }).filter(item => item.borrowIdentityNo === this.user.username && item.deleteFlag === 0 && item.kind == 0);
-
-                if (this.tableData.length > 4) {
-                  this.$message.warning('You can only borrow no more than FIVE books !');
-                } else {
-                  for (let i = 0; i < this.tableData.length; i++) {
-                    if (this.borrowBookForm.bookNo === this.tableData[i].bookNo) {
-                      this.$message.warning('DO NOT borrow the same book !');
-                      return
-                    }
-                  }
-                  this.btnDisabled = false;
-                  this.borrowBookForm.borrowIdentityNo = this.user.username;
-                  this.borrowBookForm.startTime = this.borrowdate;
-                  this.borrowBookForm.endTime = this.returndate;
-                  this.borrowBookForm.kind = kind;
-                  let params = this.borrowBookForm;
-                  this.$http.post('/api/borrow/book/add', params).then(res => {
-                    if (res.data.code != 200) {
-                      this.$message.warning('Fail！');
-                      return;
-                    }
-                    this.$router.push({
-                      path: '/borrowBookList'
-                    })
-                    this.$message.success('Success！');
-                  })
-                }
-              })
-            }
-            else{
-              this.$http.post('/api/borrow/book/list', {}).then(res => {
-                this.tableData = res.data.data.list.map(item => {
-                  return {
-                    ...item,
-                  }
-                }).filter(item => item.borrowIdentityNo === this.user.username && item.deleteFlag === 0 && item.kind == 1);
-
-                if (this.tableData.length > 1) {
-                  this.$message.warning('You can only reserve two books !');
-                  return
-                }
-                  this.btnDisabled = false;
-                  this.borrowBookForm.borrowIdentityNo = this.user.username;
-                  this.borrowBookForm.startTime = this.borrowdate;
-                  this.borrowBookForm.endTime = this.reservetime;
-                  this.borrowBookForm.kind = kind;
-                  let params = this.borrowBookForm;
+            for(let j=0;j<=this.selectvisible;j++) {
+              if (this.borrowBookForm[j].bookNo == '' && this.selectvisible == 0) {
+                this.$message.warning('Please select a book !');
+                return;
+              }
+              if(this.borrowBookForm[j].bookNo != ''){
+                if (kind == 0) {
                   this.$http.post('/api/borrow/book/list', {}).then(res => {
                     this.tableData = res.data.data.list.map(item => {
                       return {
                         ...item,
                       }
                     }).filter(item => item.borrowIdentityNo === this.user.username && item.deleteFlag === 0 && item.kind == 0);
-                    for (let i = 0; i < this.tableData.length; i++) {
-                      if (this.borrowBookForm.bookNo === this.tableData[i].bookNo) {
-                        this.$message.warning('DO NOT reserve the book you have borrowed !');
-                        return
+
+                    if (this.tableData.length > 4) {
+                      this.$message.warning('You can only borrow no more than FIVE books !');
+                    } else {
+                      for (let i = 0; i < this.tableData.length; i++) {
+                        if (this.borrowBookForm[j].bookNo === this.tableData[i].bookNo) {
+                          this.$message.warning('DO NOT borrow the same book !');
+                          return
+                        }
+                      }
+                      this.btnDisabled = false;
+                      this.borrowBookForm[j].borrowIdentityNo = this.user.username;
+                      this.borrowBookForm[j].startTime = this.borrowdate;
+                      this.borrowBookForm[j].endTime = this.returndate;
+                      this.borrowBookForm[j].kind = kind;
+                      let params = this.borrowBookForm[j];
+                      if (params.bookNo != '') {
+                        this.$http.post('/api/borrow/book/add', params).then(res => {
+                          if (res.data.code != 200) {
+                            this.$message.warning('Fail！');
+                            return;
+                          }
+                          this.$http.post('/api/borrow/book/list', params).then(res => {
+                            this.tableData3 = res.data.data.list.map(item => {
+                              return {
+                                ...item,
+                                bookId: item.bookId,
+                                startDate: item.startTime
+                              }
+                            }).filter(item => item.borrowIdentityNo === this.user.username);
+                            for (let i = 0; i < this.tableData3.length; i++) {
+                              let currentTime = new Date().getTime();
+                              let endTime = new Date(this.tableData3[i].startTime).getTime();
+                              let q= this.trayList.length
+                              let p = 0
+                              if (currentTime - endTime <= 10000){
+                                for(let w=0;w<q;w++){
+                                  if(this.tableData3[i].bookId==this.trayList[w]&&i!=w)
+                                    p=1
+                                }
+                                if(p==0)
+                                  this.trayList.push(this.tableData3[i].bookId)
+                              }
+                            }
+                            this.$nextTick(() => {
+                              this.trayList.forEach((item, index) => {
+                                JsBarcode('#trayItem' + index, item, this.options);
+                              })
+                            })
+                          })
+
+                        })
                       }
                     }
-                    this.$http.post('/api/borrow/book/add', params).then(res => {
-                      if (res.data.code != 200) {
-                        this.$message.warning('Fail！');
-                        return;
+                  })
+                }
+                else {
+                  this.$http.post('/api/borrow/book/list', {}).then(res => {
+                    this.tableData = res.data.data.list.map(item => {
+                      return {
+                        ...item,
                       }
-                      this.$router.push({
-                        path: '/borrowBookList'
+                    }).filter(item => item.borrowIdentityNo === this.user.username && item.deleteFlag === 0 && item.kind == 1);
+
+                    if (this.tableData.length > 0) {
+                      this.$message.warning('You can only reserve one books !');
+                      return
+                    }
+                    this.btnDisabled = false;
+                    this.borrowBookForm[j].borrowIdentityNo = this.user.username;
+                    this.borrowBookForm[j].startTime = this.borrowdate;
+                    this.borrowBookForm[j].endTime = this.reservetime;
+                    this.borrowBookForm[j].kind = kind;
+                    let params = this.borrowBookForm[j];
+                    this.$http.post('/api/borrow/book/list', {}).then(res => {
+                      this.tableData = res.data.data.list.map(item => {
+                        return {
+                          ...item,
+                        }
+                      }).filter(item => item.borrowIdentityNo === this.user.username && item.deleteFlag === 0 && item.kind == 0);
+                      for (let i = 0; i < this.tableData.length; i++) {
+                        if (this.borrowBookForm.bookNo === this.tableData[i].bookNo) {
+                          this.$message.warning('DO NOT reserve the book you have borrowed !');
+                          return
+                        }
+                      }
+                      this.$http.post('/api/borrow/book/add', params).then(res => {
+                        if (res.data.code != 200) {
+                          this.$message.warning('Fail！');
+                          return;
+                        }
+                        this.$router.push({
+                          path: '/borrowBookList'
+                        })
+                        this.$message.success('Success！');
                       })
-                      this.$message.success('Success！');
                     })
-                    })
-                    })
+                  })
 
                 }
-
+              }
             }
-            // this.btnDisabled = false;
-            // this.borrowBookForm.borrowIdentityNo = this.user.username;
-            // this.borrowBookForm.startTime = this.borrowdate;
-            // this.borrowBookForm.endTime = this.returndate;
-            // let params = this.borrowBookForm;
-            // this.$http.post('/api/borrow/book/add',params).then(res=>{
-            //   if(res.data.code != 200){
-            //     this.$message.warning('Fail！');
-            //     return;
-            //   }
-            //   this.$router.push({
-            //     path: '/borrowBookList'
-            //   })
-            //   this.$message.success('Success！');
-            // })
+            if (kind==0)
+              this.visible = true
+            this.trayList = []
+          },
+          addselect(){
+            this.$http.post('/api/borrow/book/list', {}).then(res => {
+              this.tableData = res.data.data.list.map(item => {
+                return {
+                  ...item,
+                }
+              }).filter(item => item.borrowIdentityNo === this.user.username && item.deleteFlag === 0 && item.kind == 0);
+              for(let i =0;i<4;i++){
+                for (let j=1;j<5;j++) {
+                  if (i!=j&&this.borrowBookForm[i].bookNo != '' && this.borrowBookForm[i].bookNo == this.borrowBookForm[j].bookNo) {
+                    this.$message.warning('do not select same book')
+                    return;
+                  }
+                }
+              }
+              if (this.tableData.length + 1 + this.selectvisible === 5) {
+                return;
+              }
+              this.selectvisible++
+            })
+          },
+          handleClose(){
+            this.visible = false
+            this.$router.push({
+              path: '/borrowBookList'
+            })
           }
+
+
+    }
 
     }
 

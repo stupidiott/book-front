@@ -101,7 +101,7 @@
     import ElRadio from "element-ui/packages/radio/src/radio";
     import {mapState} from 'vuex'
     import common from '@/api/common/common.js'
-    import JsBarcode from "../../../JsBarcode";
+    import JsBarcode from "jsbarcode";
 
     export default {
       components: {ElRadio},

@@ -13,6 +13,7 @@
     "axios": "^0.21.1",
     "echarts": "^5.2.1",
     "element-ui": "^2.15.1",
+    "jsbarcode": "^3.11.5",
     "mavon-editor": "^2.9.1",
     "qs": "^6.10.1",
     "vue": "^2.5.2",

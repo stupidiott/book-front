@@ -45,32 +45,36 @@
           pageSize: 10,
           borrowIdentityNo: ''
         },
-        tableData: [],
         menuName:"Book Dashboard",
         number1:'',color1:"#AFEEEE",el1:"el-icon-reading",
-        number2:'不会算',color2:"#BA55D3",el2:"el-icon-copy-document",
+        number2:'',color2:"#BA55D3",el2:"el-icon-copy-document",
         number3:'不会算',color3:"#32CD32",el3:"el-icon-edit-outline",
         number4:'不会算',color4:"#F08080",el4:"el-icon-s-opportunity"
       }
     },
     mounted() {
-      this.borrowNum()
+      this.borrowAndLastBorrowNum()
     },
     computed: {
       // 第一种写法
       ...mapState(['user','token'])
     },
     methods:{
-      borrowNum() {
+      borrowAndLastBorrowNum() {
         this.$http.post('/api/borrow/book/list',this.query).then(res=>{
-          this.tableData = res.data.data.list.map(item=>{
+          let tableData = res.data.data.list.map(item=>{
             return {
               ...item,
             }
           }).filter(item=>item.borrowIdentityNo === this.user.username && item.deleteFlag === 0&&item.kind===0);
-          this.number1 = this.tableData.length;
+          this.number1 = tableData.length;
+          if (tableData.length ===0 )
+            this.number2 = '0'
+          else {
+            this.number2 = tableData[0].bookName
+          }
         })
-      }
+      },
     }
 
   }

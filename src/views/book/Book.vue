@@ -119,7 +119,7 @@
         :before-close="handleClose">
         <el-form >
           <el-form-item label="Library Type：" prop="library">
-            <el-select v-model="para.parameter_type" placeholder="请选择" >
+            <el-select v-model="para.parameter_type" placeholder="--------------Select---------------" >
               <el-option
                 v-for="item in options1"
                 :label="item.label"
@@ -162,7 +162,7 @@
     import axios from 'axios'
     import parameterApi from '@/api/parameter/parameterApi'
     import {mapState} from "vuex";
-    import JsBarcode from "../../../JsBarcode";
+    import JsBarcode from "jsbarcode";
     const bookObj = {
       bookNo: '',
       bookName: '',
@@ -235,14 +235,14 @@
             floorOptions: [],
             categoryNameOptions: [],
             tableTitle: [
-              {prop: 'bookNo',label: 'ISBN' },
-              {prop: 'bookName',label: 'Book Name' },
-              {prop: 'author',label: 'Author'},
-              {prop: 'Location',label: 'Location'},
-              {prop: 'categoryName',label: 'Category'},
-              {prop: 'publisher',label: 'Publisher'},
-              {prop: 'status',label: 'Inventory',isHtml: false},
-              {prop: 'createTime',label: 'Entry Time'},
+              {prop: 'bookNo',label: 'ISBN' ,width: 150},
+              {prop: 'bookName',label: 'Book Name' ,width: 150},
+              {prop: 'author',label: 'Author',width: 150},
+              {prop: 'Location',label: 'Location',width: 150},
+              {prop: 'categoryName',label: 'Category',width: 100},
+              {prop: 'publisher',label: 'Publisher',width: 200},
+              {prop: 'status',label: 'Inventory',isHtml: false,width: 100},
+              {prop: 'createTime',label: 'Entry Time',width: 200},
               {prop: 'remarkHtml',label: 'Description',isHtml: true},
 
             ],
@@ -438,8 +438,9 @@
               cancelButtonText: 'Cancel'
             }).then(()=>{
               let params = {
-                id: row.id,
-                deleteFlag: 1
+                bookNo: row.bookNo,
+                deleteFlag: 1,
+                id:row.id
               }
               bookApi.update("/api/book/update",params).then(res=>{
                 if(res.data.code !== 200){

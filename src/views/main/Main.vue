@@ -127,7 +127,7 @@
 
   import Storage from '@/utils/localStorage'
   import {mapState} from 'vuex'
-  import JsBarcode from "../../../JsBarcode";
+  import JsBarcode from "jsbarcode";
 
   const schoolName = window.PLATFORM_CONFIG.schoolName;
 
