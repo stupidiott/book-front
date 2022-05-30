@@ -28,6 +28,8 @@
                    :visible-edit="false"
                    :visible-reset-password="true"
                    :visible-barcode="true"
+                   :visible-setting-auth="true"
+                   :visible-switch="true"
                    @settingAuth="settingAuth"
                    @resetPassword="resetPassword"
                    @showBarcode="showBarcode"
