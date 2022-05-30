@@ -127,7 +127,7 @@
                  })
                for (let i = 0; i < this.tableData.length; i++) {
                  if (this.user.username == this.tableData[i].username&&this.tableData[i].debt!=0) {
-                   this.$message.warning('You have debts to pay.Please pay the debt or you will not be able to borrow books!.');
+                   this.$message.warning('You have debts to pay. Please pay the debt or you will not be able to borrow books!.');
                    this.debt = this.tableData[i].debt;
                    this.user.debt = this.debt;
                  }
@@ -141,7 +141,11 @@
                }).filter(item => item.borrowIdentityNo === this.user.username && item.deleteFlag === 0 && item.kind == 0);
                this.borrow = 5-this.tableData.length;
                let f = 0;
+               let lost = 0;
+               let damage = 0;
                for (let i = 0; i < this.tableData.length; i++) {
+                 if (this.tableData[i].lost === 1) lost++;
+                 if (this.tableData[i].damage === 1) damage++;
                  let currentTime = new Date().getTime();
                  let endTime = new Date(this.tableData[i].endTime).getTime();
                  if(currentTime-endTime>0){
@@ -151,6 +155,8 @@
                    f=1;
                  }
                }
+               this.damage  = damage;
+               this.lost = lost;
                if(f==1)
                  this.$message.warning('The book you have borrow is about to expire')
              })
@@ -165,8 +171,10 @@
                for (let i = 0; i < this.tableData.length; i++) {
                  let currentTime = new Date().getTime();
                  let endTime = new Date(this.tableData[i].endTime).getTime();
+                 this.user.reserve = 0;
                 if(currentTime-endTime>0){
                   this.reserveexpireFlag='';
+                  this.user.reserve = 1;
                 }
                 else if(endTime-currentTime<=3558994){
                   f=1;
