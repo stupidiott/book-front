@@ -19,7 +19,7 @@
                 Title：
               </td>
               <td>
-                <el-select v-model="borrowBookForm[0].bookNo" filterable placeholder="Select a book1 ">
+                <el-select v-model="borrowBookForm[0].bookNo" clearable placeholder="Select a book1">
                   <el-option
                     v-for="(item,index) in bookOptions"
                     :key="index"
@@ -29,7 +29,7 @@
                     <span style="float: right; color: #8492a6; font-size: 13px">{{ item.status }} copies</span>
                   </el-option>
                 </el-select>
-                <el-select v-model="borrowBookForm[1].bookNo" filterable placeholder="Select a book2 " v-show="selectvisible>=1">
+                <el-select v-model="borrowBookForm[1].bookNo" clearable placeholder="Select a book2 " v-show="selectvisible>=1">
                   <el-option
                     v-for="(item,index) in bookOptions"
                     :key="index"
@@ -39,7 +39,7 @@
                     <span style="float: right; color: #8492a6; font-size: 13px">{{ item.status }} copies</span>
                   </el-option>
                 </el-select>
-                <el-select v-model="borrowBookForm[2].bookNo" filterable placeholder="Select a book3 " v-show="selectvisible>=2">
+                <el-select v-model="borrowBookForm[2].bookNo" clearable placeholder="Select a book3 " v-show="selectvisible>=2">
                   <el-option
                     v-for="(item,index) in bookOptions"
                     :key="index"
@@ -49,7 +49,7 @@
                     <span style="float: right; color: #8492a6; font-size: 13px">{{ item.status }} copies</span>
                   </el-option>
                 </el-select>
-                <el-select v-model="borrowBookForm[3].bookNo" filterable placeholder="Select a book4 "v-show="selectvisible>=3">
+                <el-select v-model="borrowBookForm[3].bookNo" clearable placeholder="Select a book4 "v-show="selectvisible>=3">
                   <el-option
                     v-for="(item,index) in bookOptions"
                     :key="index"
@@ -59,7 +59,7 @@
                     <span style="float: right; color: #8492a6; font-size: 13px">{{ item.status }} copies</span>
                   </el-option>
                 </el-select>
-                <el-select v-model="borrowBookForm[4].bookNo" filterable placeholder="Select a book5 " v-show="selectvisible>=4">
+                <el-select v-model="borrowBookForm[4].bookNo" clearable placeholder="Select a book5 " v-show="selectvisible>=4">
                   <el-option
                     v-for="(item,index) in bookOptions"
                     :key="index"
