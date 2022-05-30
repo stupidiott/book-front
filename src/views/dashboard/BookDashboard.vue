@@ -48,12 +48,14 @@
         menuName:"Book Dashboard",
         number1:'',color1:"#AFEEEE",el1:"el-icon-reading",
         number2:'',color2:"#BA55D3",el2:"el-icon-copy-document",
-        number3:'不会算',color3:"#32CD32",el3:"el-icon-edit-outline",
-        number4:'不会算',color4:"#F08080",el4:"el-icon-s-opportunity"
+        number3:'',color3:"#32CD32",el3:"el-icon-edit-outline",
+        number4:'',color4:"#F08080",el4:"el-icon-s-opportunity"
       }
     },
     mounted() {
       this.borrowAndLastBorrowNum()
+      this.debt()
+      this.reserve()
     },
     computed: {
       // 第一种写法
@@ -75,6 +77,15 @@
           }
         })
       },
+      debt(){
+        this.number3 = this.user.debt;
+      },
+      reserve(){
+        if (this.user.reserve === 1)
+          this.number4='Expired'
+        else
+          this.number4='Normal'
+      }
     }
 
   }

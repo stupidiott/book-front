@@ -73,16 +73,19 @@
         number2:'',color2:"#40E0D0",el2:"el-icon-reading",
         number3:'',color3:"#FFC0CB",el3:"el-icon-copy-document",
         number4:'',color4:"#D2691E",el4:"el-icon-collection",
-        number5:'不会算',color5:"#F0E68C",el5:"el-icon-thumb",
-        number6:'不会算',color6:"#E6E6FA",el6:"el-icon-coffee-cup",
-        number7:'不会算',color7:"#5F9EA0",el7:"el-icon-scissors",
-        number8:'不会算',color8:"#696969",el8:"el-icon-c-scale-to-original"
+        number5:'',color5:"#F0E68C",el5:"el-icon-thumb",
+        number6:'',color6:"#E6E6FA",el6:"el-icon-coffee-cup",
+        number7:'',color7:"#5F9EA0",el7:"el-icon-scissors",
+        number8:'',color8:"#696969",el8:"el-icon-c-scale-to-original"
       }
     },
     mounted() {
       this.userNum()
       this.bookNum()
       this.borrowAndCopyNum()
+      this.totalFine()
+      this.totalLostAndDamage()
+      this.debtHistory()
     },
     computed: {
       // 第一种写法
@@ -127,7 +130,61 @@
           this.number3 = tableData.length + this.availableCopy;
         })
       },
-
+      async totalFine(){
+        this.$http.post('/api/account/list',{}).then(res=>{
+          let tableData = res.data.data.list.map(item=>{
+            return {
+              ...item,
+            }
+          })
+          let count = 0;
+          for (let i = 0; i < tableData.length; i++) {
+            if (tableData[i].debt!==0) {
+              count += tableData[i].debt
+            }
+          }
+          this.number5 = count;
+        })
+      },
+      async totalLostAndDamage(){
+        this.$http.post('/api/borrow/book/list', {}).then(res => {
+          let tableData = res.data.data.list.map(item => {
+            return {
+              ...item,
+            }
+          }).filter(item => item.deleteFlag === 0 && item.kind === 0);
+          let lost = 0;
+          let damage = 0;
+          for (let i = 0; i < tableData.length; i++) {
+            if (tableData[i].lost === 1) lost++;
+            if (tableData[i].damage === 1) damage++;
+          }
+          this.number6  = lost;
+          this.number7 = damage;
+        })
+      },
+      async debtHistory(){
+        let params = this.query;
+        let count = 0;
+        params.deleteFlag = 1;
+        this.$http.post('/api/borrow/book/list',params).then(res=>{
+          let tableData = res.data.data.list.map(item=>{
+            return {
+              ...item,
+            }
+          }).filter(item=>item.kind===0);
+          for (let i = 0; i < tableData.length; i++){
+            let endTime = new Date(tableData[i].endTime).getTime()
+            let returnTime = new Date(tableData[i].returnTime).getTime()
+            if (tableData[i].lost === 1) count += 10;
+            if (tableData[i].damage === 1) count += 10;
+            if (returnTime > endTime){
+              count+=Math.floor((returnTime - endTime)/86400000)
+            }
+          }
+          this.number8 = count;
+        })
+      }
     },
   }
 </script>
