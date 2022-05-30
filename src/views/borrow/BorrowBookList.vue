@@ -31,9 +31,14 @@
                :table-data="tableData"
                :visible-operation="true"
                :visible-return-book="user.accountType==1"
+               :visible-setting-auth="true"
+               :visible-switch1="true"
+               :visible-switch2="true"
                :visible-barcode="true"
                @returnBook="returnBook"
-               @showBarcode="showBarcode">
+               @showBarcode="showBarcode"
+               @setDamage="setDamage"
+               @setLost="setLost">
     </edu-table>
     <edu-page :current-page="query.pageNum"
               :page-size="query.pageSize"
@@ -104,9 +109,9 @@ export default {
         {prop: 'bookId',label: 'Borrow Book Id' ,width: 200},
         {prop: 'bookName',label: 'Borrow Book Name' ,width: 200},
         {prop: 'borrowIdentityNo',label: 'Borrower' ,width: 140},
-        {prop: 'startDate',label: 'Borrow Time',width: 200},
-        {prop: 'endDate',label: 'Due Time',width: 200},
-        {prop: 'expireFlag',label: 'Expired',width: 200,isHtml: true}
+        {prop: 'startDate',label: 'Borrow Time',width: 150},
+        {prop: 'endDate',label: 'Due Time',width: 150},
+        {prop: 'expireFlag',label: 'Expired',width: 120,isHtml: true}
       ],
       reservetableTitle: [
         {prop: 'bookNo',label: 'Reserve Book ISBN' ,width: 200},
@@ -162,7 +167,9 @@ export default {
               ...item,
               startDate: item.startTime.substr(0,10),
               endDate: item.endTime ? item.endTime.substr(0,10) : '--',
-              expireFlag: currentTime>endTime ? '<span class="expireFlag">expired</span>' : 'unexpired'
+              expireFlag: currentTime>endTime ? '<span class="expireFlag">expired</span>' : 'unexpired',
+              lost: item.lost === 1,
+              damage: item.damage === 1
             }
 
           }).filter(item=>item.borrowIdentityNo === this.user.username && item.deleteFlag === 0&&item.kind==0);
@@ -178,7 +185,9 @@ export default {
               ...item,
               startDate: item.startTime.substr(0,10),
               endDate: item.endTime ? item.endTime.substr(0,10) : '--',
-              expireFlag: currentTime>endTime ? '<span class="expireFlag">expired</span>' : 'unexpired'
+              expireFlag: currentTime>endTime ? '<span class="expireFlag">expired</span>' : 'unexpired',
+              lost: item.lost === 1,
+              damage: item.damage === 1
             }
           }).filter(item=>item.deleteFlag === 0&&item.kind==0);
           this.total1 = this.tableData.length;
@@ -193,7 +202,9 @@ export default {
               ...item,
               startDate: item.startTime,
               endDate: item.endTime ? item.endTime : '--',
-              expireFlag: currentTime>endTime ? '<span class="expireFlag">expired</span>' : 'unexpired'
+              expireFlag: currentTime>endTime ? '<span class="expireFlag">expired</span>' : 'unexpired',
+              lost: item.lost === 1,
+              damage: item.damage === 1
             }
 
           }).filter(item=>item.borrowIdentityNo === this.user.username && item.deleteFlag === 0&&item.kind==1);
@@ -209,7 +220,9 @@ export default {
               ...item,
               startDate: item.startTime,
               endDate: item.endTime ? item.endTime: '--',
-              expireFlag: currentTime>endTime ? '<span class="expireFlag">expired</span>' : 'unexpired'
+              expireFlag: currentTime>endTime ? '<span class="expireFlag">expired</span>' : 'unexpired',
+              lost: item.lost === 1,
+              damage: item.damage === 1
             }
           }).filter(item=>item.deleteFlag === 0&&item.kind==1);
           this.total2 = this.reservetableData.length;
@@ -367,7 +380,45 @@ export default {
     },
     handleClose2(){
       this.dialogVisible2 = false
-    }
+    },
+    setLost(row){
+      let lost = row.lost;
+      let params = {};
+      params.id = row.id;
+      if(lost){
+        params.lost = 1
+      }else {
+        params.lost = 0
+      }
+
+      this.$http.post("/api/borrow/book/update",params).then(res=>{
+        if(res.data.code !== 200){
+          this.$message.warning(res.data.message);
+        }
+      }).catch(error=>{
+        this.$message.error(error);
+      });
+
+    },
+    setDamage(row){
+      let damage = row.damage;
+      let params = {};
+      params.id = row.id;
+      if(damage){
+        params.damage = 1
+      }else {
+        params.damage = 0
+      }
+
+      this.$http.post("/api/borrow/book/update",params).then(res=>{
+        if(res.data.code !== 200){
+          this.$message.warning(res.data.message);
+        }
+      }).catch(error=>{
+        this.$message.error(error);
+      });
+
+    },
   }
 }
 </script>

@@ -18,6 +18,16 @@
           <el-switch v-model="scope.row.active" @change="changeStatus(scope.row)"></el-switch>
         </template>
       </el-table-column>
+      <el-table-column label="Lost" v-if="visibleSwitch1">
+        <template slot-scope="scope">
+          <el-switch v-model="scope.row.lost" @change="setLost(scope.row)" :disabled='user.accountType!==1'></el-switch>
+        </template>
+      </el-table-column>
+      <el-table-column label="Damage" v-if="visibleSwitch2">
+        <template slot-scope="scope">
+          <el-switch v-model="scope.row.damage" @change="setDamage(scope.row)" :disabled='user.accountType!==1'></el-switch>
+        </template>
+      </el-table-column>
 
       <!--操作列-->
       <el-table-column
@@ -76,6 +86,14 @@
                 type: Boolean,
                 default: false
             },
+          visibleSwitch1:{
+            type: Boolean,
+            default: false
+          },
+          visibleSwitch2:{
+            type: Boolean,
+            default: false
+          },
           visibleReturnBook:{
             type: Boolean,
             default: false
@@ -111,6 +129,12 @@
             changeStatus(row){
                 this.$emit('changeStatus',row);
             },
+            setLost(row){
+            this.$emit('setLost',row);
+          },
+            setDamage(row){
+            this.$emit('setDamage',row);
+          },
             cellStyle({row, column, rowIndex, columnIndex}) {
               if(row.deleteFlag === 1 && column.property === 'deleteFlagStr'){
                 return 'color:red'
